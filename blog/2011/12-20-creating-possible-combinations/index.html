@@ -1,0 +1,146 @@
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>FsBlog</title>
+    <link rel="stylesheet" href="https://danielrbradley.github.io//stylesheets/styles.css">
+    <link rel="stylesheet" href="https://danielrbradley.github.io//stylesheets/pygment_trac.css">
+    <link rel="shortcut icon" href="https://danielrbradley.github.io//favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- FSharp.Formatting Styles -->
+  	<link rel="stylesheet" type="text/css" media="screen" href="https://danielrbradley.github.io//fsharp.formatting/tooltips.css" />
+  	<script type="text/javascript" src="https://danielrbradley.github.io//fsharp.formatting/tooltips.js"></script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+  <body>
+  	<div class="wrapper">
+	  <header>
+	  	  <a href="https://danielrbradley.github.io//index.html" class="falseheader">FsBlog</a>
+        <p>Blog aware, static site generation using F#.</p>
+
+        <p class="view"><a href="https://github.com/saxonmatt/FsBlog">View the Project on GitHub</a></p>
+        <ul>
+          <li><a href="https://github.com/saxonmatt/FsBlog">View On <strong>GitHub</strong></a></li>
+          <li><a href="https://github.com/saxonmatt/FsBlog/issues">Report a <strong>Bug</strong></a></li>
+          <li><a href="https://github.com/saxonmatt/FsBlog/issues/milestones">Check <strong>Progress</strong></a></li>
+        </ul>
+        <h2>Recent posts</h2>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2014/08-20-reflections-of-node-for-fsharp/index.html">Reflections of a .Net'er in a Node World (Some F# Language Ideas)</a></h3>
+    		    <p class="view"><small>    <time datetime="2014-08-20T21:46:00" pubdate data-updated="true">Aug 20, 2014</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2013/09-23-experiences-of-csharp-async-in-a-web-application/index.html">Experiences of C# Async in a Web Application</a></h3>
+    		    <p class="view"><small>    <time datetime="2013-09-23T15:59:00" pubdate data-updated="true">Sep 23, 2013</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/06-21-mvc-enum-dropdown-list/index.html">Better MVC Enum Dropdown List Implementation</a></h3>
+    		    <p class="view"><small>    <time datetime="2012-06-21T12:10:00" pubdate data-updated="true">Jun 21, 2012</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/02-09-introducing-fluentmysql/index.html">Introducing FluentMySQL</a></h3>
+    		    <p class="view"><small>    <time datetime="2012-02-09T22:06:00" pubdate data-updated="true">Feb 9, 2012</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/01-17-code-generation-workflow-brainstorming/index.html">Code generation workflow brainstorming</a></h3>
+    		    <p class="view"><small>    <time datetime="2012-01-17T18:00:00" pubdate data-updated="true">Jan 17, 2012</time>
+</small><br />
+
+</p>
+      </header>
+      <section>
+		    
+<h1>Creating possible combinations from a list of lists in F#</h1>
+
+<p>Just a short post after I came across an interesting problem while learning F# and couldn’t find any great resources to solve what seems to be quite a generic problem.</p>
+
+<p>The scenario is:
+1. You have a list of lists where each of the inner lists contains 1 or more element.
+2. You want to find all possible combinations where you take precisely one element from each inner list.</p>
+
+<p>The example of where I found this problem is calculating the possible value of a hand in blackjack:</p>
+
+<ul>
+<li>You have a set of cards</li>
+<li>Each card has a value</li>
+<li>Ace has both the value 1 and 11 at the same time</li>
+<li>You might be holding more than 1 ace</li>
+</ul>
+
+<p>Therefore we want to be able to calculate the possible values the card could be determined to have.</p>
+
+<p>We represent the value of each card as a list. The five of hearts is <code>[5]</code>, the jack of clubs is <code>[10]</code>, and the ace of spades is <code>[1;11]</code>. If you hold all three of these cards in your hand you can either make 16 or 26.</p>
+
+<p>We would represent this hand as <code>[[5];[10];[1;11]]</code> and would ultimately aim to get our results in the form <code>[16;26]</code>. However as an intermediate step we want to transform our hand into a list of possible card values such as <code>[[5;10;1];[5;10;11]]</code> which we can then simply sum to get our result.</p>
+
+<p>Here’s the function that recursively expands all combinations, returning a list of each combination of items.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+<span class="l">9: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">combinations</span> (<span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">l</span>) <span class="o">=</span>
+    <span class="k">match</span> <span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="i">l</span> <span class="k">with</span>
+    | [] <span class="k">-&gt;</span> []
+    | <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">h</span><span class="o">::</span>[] <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs3', 5)" onmouseover="showTip(event, 'fs3', 5)" class="i">h</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs4', 6)" onmouseover="showTip(event, 'fs4', 6)" class="i">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 7)" onmouseover="showTip(event, 'fs5', 7)" class="i">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs6', 8)" onmouseover="showTip(event, 'fs6', 8)" class="i">opt</span> <span class="k">-&gt;</span> [<span onmouseout="hideTip(event, 'fs6', 9)" onmouseover="showTip(event, 'fs6', 9)" class="i">opt</span>])
+    | <span onmouseout="hideTip(event, 'fs3', 10)" onmouseover="showTip(event, 'fs3', 10)" class="i">h</span><span class="o">::</span><span onmouseout="hideTip(event, 'fs7', 11)" onmouseover="showTip(event, 'fs7', 11)" class="i">t</span> <span class="k">-&gt;</span>
+        <span onmouseout="hideTip(event, 'fs1', 12)" onmouseover="showTip(event, 'fs1', 12)" class="i">combinations</span> <span onmouseout="hideTip(event, 'fs7', 13)" onmouseover="showTip(event, 'fs7', 13)" class="i">t</span>
+        <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs4', 14)" onmouseover="showTip(event, 'fs4', 14)" class="i">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 15)" onmouseover="showTip(event, 'fs5', 15)" class="i">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs8', 16)" onmouseover="showTip(event, 'fs8', 16)" class="i">tOpts</span> <span class="k">-&gt;</span>
+            <span onmouseout="hideTip(event, 'fs3', 17)" onmouseover="showTip(event, 'fs3', 17)" class="i">h</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs4', 18)" onmouseover="showTip(event, 'fs4', 18)" class="i">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 19)" onmouseover="showTip(event, 'fs5', 19)" class="i">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs9', 20)" onmouseover="showTip(event, 'fs9', 20)" class="i">hOpt</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 21)" onmouseover="showTip(event, 'fs9', 21)" class="i">hOpt</span> <span class="o">::</span><span onmouseout="hideTip(event, 'fs8', 22)" onmouseover="showTip(event, 'fs8', 22)" class="i">tOpts</span>))
+        <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs4', 23)" onmouseover="showTip(event, 'fs4', 23)" class="i">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 24)" onmouseover="showTip(event, 'fs10', 24)" class="i">concat</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Essentially, a quick line by line run through is:</p>
+
+<ol>
+<li>To cover all cases, if this is called with an empty list, just return an empty list. This is not used in the recursion.</li>
+<li>If we are looking at the last list of options then return each option as a new list containing only itself.</li>
+<li>If we are in the middle of the list (or equally the start) then get the combinations of the tail option lists giving us a list of combinations.</li>
+<li>For each combination,:
+<ol>
+<li>For each option in the current set of options
+<ol>
+<li>Add the option to the beginning of each of the tail combinations</li>
+</ol></li>
+</ol></li>
+<li>Flatten the list of tail combinations of head options to outcome list to a list of outcome lists.</li>
+</ol>
+
+<div class="tip" id="fs1">val combinations : l:&#39;a list list -&gt; &#39;a list list<br /><br />Full name: creatingpossiblecombinations.combinations</div>
+<div class="tip" id="fs2">val l : &#39;a list list</div>
+<div class="tip" id="fs3">val h : &#39;a list</div>
+<div class="tip" id="fs4">Multiple items<br />module List<br /><br />from Microsoft.FSharp.Collections<br /><br />--------------------<br />type List&lt;&#39;T&gt; =<br />&#160;&#160;| ( [] )<br />&#160;&#160;| ( :: ) of Head: &#39;T * Tail: &#39;T list<br />&#160;&#160;interface IEnumerable<br />&#160;&#160;interface IEnumerable&lt;&#39;T&gt;<br />&#160;&#160;member Head : &#39;T<br />&#160;&#160;member IsEmpty : bool<br />&#160;&#160;member Item : index:int -&gt; &#39;T with get<br />&#160;&#160;member Length : int<br />&#160;&#160;member Tail : &#39;T list<br />&#160;&#160;static member Cons : head:&#39;T * tail:&#39;T list -&gt; &#39;T list<br />&#160;&#160;static member Empty : &#39;T list<br /><br />Full name: Microsoft.FSharp.Collections.List&lt;_&gt;</div>
+<div class="tip" id="fs5">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; list:&#39;T list -&gt; &#39;U list<br /><br />Full name: Microsoft.FSharp.Collections.List.map</div>
+<div class="tip" id="fs6">val opt : &#39;a</div>
+<div class="tip" id="fs7">val t : &#39;a list list</div>
+<div class="tip" id="fs8">val tOpts : &#39;a list</div>
+<div class="tip" id="fs9">val hOpt : &#39;a</div>
+<div class="tip" id="fs10">val concat : lists:seq&lt;&#39;T list&gt; -&gt; &#39;T list<br /><br />Full name: Microsoft.FSharp.Collections.List.concat</div>
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://twitter.com/mattdrivendev">MattDrivenDev</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+  	</div>
+    <script src="https://danielrbradley.github.io//javascripts/scale.fix.js"></script>
+  </body>
+</html>

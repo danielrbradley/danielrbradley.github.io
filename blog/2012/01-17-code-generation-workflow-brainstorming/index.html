@@ -1,0 +1,109 @@
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>FsBlog</title>
+    <link rel="stylesheet" href="https://danielrbradley.github.io//stylesheets/styles.css">
+    <link rel="stylesheet" href="https://danielrbradley.github.io//stylesheets/pygment_trac.css">
+    <link rel="shortcut icon" href="https://danielrbradley.github.io//favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- FSharp.Formatting Styles -->
+  	<link rel="stylesheet" type="text/css" media="screen" href="https://danielrbradley.github.io//fsharp.formatting/tooltips.css" />
+  	<script type="text/javascript" src="https://danielrbradley.github.io//fsharp.formatting/tooltips.js"></script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+  <body>
+  	<div class="wrapper">
+	  <header>
+	  	  <a href="https://danielrbradley.github.io//index.html" class="falseheader">FsBlog</a>
+        <p>Blog aware, static site generation using F#.</p>
+
+        <p class="view"><a href="https://github.com/saxonmatt/FsBlog">View the Project on GitHub</a></p>
+        <ul>
+          <li><a href="https://github.com/saxonmatt/FsBlog">View On <strong>GitHub</strong></a></li>
+          <li><a href="https://github.com/saxonmatt/FsBlog/issues">Report a <strong>Bug</strong></a></li>
+          <li><a href="https://github.com/saxonmatt/FsBlog/issues/milestones">Check <strong>Progress</strong></a></li>
+        </ul>
+        <h2>Recent posts</h2>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2014/08-20-reflections-of-node-for-fsharp/index.html">Reflections of a .Net'er in a Node World (Some F# Language Ideas)</a></h3>
+    		    <p class="view"><small>    <time datetime="2014-08-20T21:46:00" pubdate data-updated="true">Aug 20, 2014</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2013/09-23-experiences-of-csharp-async-in-a-web-application/index.html">Experiences of C# Async in a Web Application</a></h3>
+    		    <p class="view"><small>    <time datetime="2013-09-23T15:59:00" pubdate data-updated="true">Sep 23, 2013</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/06-21-mvc-enum-dropdown-list/index.html">Better MVC Enum Dropdown List Implementation</a></h3>
+    		    <p class="view"><small>    <time datetime="2012-06-21T12:10:00" pubdate data-updated="true">Jun 21, 2012</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/02-09-introducing-fluentmysql/index.html">Introducing FluentMySQL</a></h3>
+    		    <p class="view"><small>    <time datetime="2012-02-09T22:06:00" pubdate data-updated="true">Feb 9, 2012</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/01-17-code-generation-workflow-brainstorming/index.html">Code generation workflow brainstorming</a></h3>
+    		    <p class="view"><small>    <time datetime="2012-01-17T18:00:00" pubdate data-updated="true">Jan 17, 2012</time>
+</small><br />
+
+</p>
+      </header>
+      <section>
+		    
+<h1>Code generation workflow brainstorming</h1>
+
+<p>Since starting work at <a href="http://pebblecode.com/">Pebble {code}</a> one of the exciting new areas that I’ve been looking into is <a href="http://en.wikipedia.org/wiki/Automatic_programming">code generation (or automatic programming)</a>. The use case is simply auto-generating the bulk of database access code directly from the database model its self allowing quicker changes to the core model as you’re not having to re-write database access code along with every model change. This also allows for a higher level of abstraction, therefore allowing higher productivity with less code to directly maintain.</p>
+
+<p>The current code generation approach we’re using is based around the open source <a href="http://www.mygenerationsoftware.com/">MyGeneration</a> tool. For the design of the model we’re using <a href="http://www.mysql.com/products/workbench/">MySQL workbench</a> for modelling the database. For the database interaction we’re using the <a href="http://code.google.com/p/mybatisnet/">Apache iBatis project</a> for database mapping.</p>
+
+<p>The current workflow for making a change to the model goes something like this:</p>
+
+<ol>
+<li>Create table(s) in the MySql workbench model</li>
+<li>Export updated create script
+<ol>
+<li>Also create any migration scripts required to update the existing database with your changes</li>
+</ol></li>
+<li>Re-create your local development database with the changes</li>
+<li>Open MyGeneration and add any required metadata</li>
+<li>Select the tables and objects you want to re-generate</li>
+<li>Execute code generation</li>
+<li>Perform required manual integration of the generated code</li>
+<li>Add any additional handmade code to compliment the generated code</li>
+</ol>
+
+<p>This current workflow can introduce friction to integration in two main areas:
+1. Generating code off the local database does not ensure that the database has the latest set of changes, or is even generated from the current branch of development. Re-deployment of the database can also be a time-consuming process if it’s having to be run multiple times.
+2. The MyGeneration tool has a single install path and is therefore a shared component, not specific to the current branch of development or included alongside the source control.</p>
+
+<p>Therefore, my current ideas around this area are to research the feasibility of two main changes.</p>
+
+<h2>Remove deployment to an actual database before generating code</h2>
+
+<p>The ideal solution here would be to have a method of extracting the database metadata from as close to the original model as possible. A good point of interception could be the SQL database create script. Theoretically it could be possible to work directly with the workbench files, however these are far less stable in standardisation than SQL and would be more likely to change and require more on-going work, whereas the SQL syntax is very strictly defined.</p>
+
+<p>My current research in this area is to use <a href="http://www.antlr.org/">ANTLR</a> to parse the <a href="http://www.antlr.org/grammar/1242202695031/mysql-grammar.zip">MySQL grammar</a> (zip file), and create an object model to represent the created database. Initially this would just be supporting table creation statements, but could theoretically also extend to views and stored procedures. A good example of the object model is the <a href="http://mygeneration.svn.sourceforge.net/viewvc/mygeneration/trunk/mymeta/Interfaces/">interfaces</a> used in the <a href="http://mygeneration.svn.sourceforge.net/viewvc/mygeneration/trunk/mymeta/">MyMeta project</a> of MyGeneration.</p>
+
+<h2>Integrate code generation into the IDE</h2>
+
+<p>I’m looking specifically at the <a href="http://msdn.microsoft.com/en-us/library/bb126445.aspx">T4 Text Templates</a>. This tool is specifically quite useful as it has tight integration with Visual Studio (and other .Net IDEs) as well as being able to be run on the <a href="http://msdn.microsoft.com/en-us/library/bb126245.aspx">command line directly</a>.</p>
+
+<p>The T4 engine is designed specifically to create a single output file off of a single template but can also be adapted to <a href="http://www.olegsych.com/2008/03/how-to-generate-multiple-outputs-from-single-t4-template/">generate multiples files</a>. Using the MyGeneration tool to generate multiple files also uses a similar technique. This would therefore mean that there is a single control template which gets the input model using the previous technique, then runs all the sub-templates to create the files in the correct locations.</p>
+
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://twitter.com/mattdrivendev">MattDrivenDev</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+  	</div>
+    <script src="https://danielrbradley.github.io//javascripts/scale.fix.js"></script>
+  </body>
+</html>

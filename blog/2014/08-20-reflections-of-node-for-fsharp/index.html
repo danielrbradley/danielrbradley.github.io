@@ -1,0 +1,193 @@
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>FsBlog</title>
+    <link rel="stylesheet" href="https://danielrbradley.github.io//stylesheets/styles.css">
+    <link rel="stylesheet" href="https://danielrbradley.github.io//stylesheets/pygment_trac.css">
+    <link rel="shortcut icon" href="https://danielrbradley.github.io//favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- FSharp.Formatting Styles -->
+  	<link rel="stylesheet" type="text/css" media="screen" href="https://danielrbradley.github.io//fsharp.formatting/tooltips.css" />
+  	<script type="text/javascript" src="https://danielrbradley.github.io//fsharp.formatting/tooltips.js"></script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+  <body>
+  	<div class="wrapper">
+	  <header>
+	  	  <a href="https://danielrbradley.github.io//index.html" class="falseheader">FsBlog</a>
+        <p>Blog aware, static site generation using F#.</p>
+
+        <p class="view"><a href="https://github.com/saxonmatt/FsBlog">View the Project on GitHub</a></p>
+        <ul>
+          <li><a href="https://github.com/saxonmatt/FsBlog">View On <strong>GitHub</strong></a></li>
+          <li><a href="https://github.com/saxonmatt/FsBlog/issues">Report a <strong>Bug</strong></a></li>
+          <li><a href="https://github.com/saxonmatt/FsBlog/issues/milestones">Check <strong>Progress</strong></a></li>
+        </ul>
+        <h2>Recent posts</h2>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2014/08-20-reflections-of-node-for-fsharp/index.html">Reflections of a .Net'er in a Node World (Some F# Language Ideas)</a></h3>
+    		    <p class="view"><small>    <time datetime="2014-08-20T21:46:00" pubdate data-updated="true">Aug 20, 2014</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2013/09-23-experiences-of-csharp-async-in-a-web-application/index.html">Experiences of C# Async in a Web Application</a></h3>
+    		    <p class="view"><small>    <time datetime="2013-09-23T15:59:00" pubdate data-updated="true">Sep 23, 2013</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/06-21-mvc-enum-dropdown-list/index.html">Better MVC Enum Dropdown List Implementation</a></h3>
+    		    <p class="view"><small>    <time datetime="2012-06-21T12:10:00" pubdate data-updated="true">Jun 21, 2012</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/02-09-introducing-fluentmysql/index.html">Introducing FluentMySQL</a></h3>
+    		    <p class="view"><small>    <time datetime="2012-02-09T22:06:00" pubdate data-updated="true">Feb 9, 2012</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/01-17-code-generation-workflow-brainstorming/index.html">Code generation workflow brainstorming</a></h3>
+    		    <p class="view"><small>    <time datetime="2012-01-17T18:00:00" pubdate data-updated="true">Jan 17, 2012</time>
+</small><br />
+
+</p>
+      </header>
+      <section>
+		    
+<h1>Reflections of a .Net'er in a Node World (Some F# Language Ideas)</h1>
+
+<p>I recently got the chance to have a brief change of scenery and join a project developing in node.js. Though I am very happy to get back to my comfort zone with .Net and F#, the experience gave me exposure to some nice new ideas, and got me thinking about what might be possible with F#, given that F# is also an open language with a great culture of trying new things and embracing change.</p>
+
+<p>This article is a short list of pie-in-the-sky kind of ideas, which I guess are probably complete unfeasible and fraught with difficult edge cases, but are my way of asking the question of are we (the F# community) pushing for the very best language features, or are there any areas in which we settle for second-class solutions?</p>
+
+<h2>Project Files</h2>
+
+<p>A challenge of being a .Net developer in a Javascript world is to want to utilise the Visual Studio tool chain while still playing nicely with other people making changes. One issue in this area is that Visual Studio requires the use of project files explicitly naming each file being used.</p>
+
+<p>While the MSBuild in the underlying project files does support wildcards for file inclusion, Visual Studio really doesn't work well with wildcards when adding, removing or trying to organise files.</p>
+
+<p>So, I guess this question is directly to Visual Studio rather than F#: How difficult would it be to make project files lighter-weight and work better with wildcards?</p>
+
+<h2>File Dependencies</h2>
+
+<p>One of the only good reasons for the explicit listing of files in project files is to specify the order of F# files because of having to be passed to the compiler in order based on the dependencies between each of the files.</p>
+
+<p>The trend in the Javascript ecosystem is to move towards the likes of Browserify or node's modules for dealing with file linking where you simply 'reference' the name of the file that you depend on such as:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">var</span> <span class="i">foo</span> <span class="o">=</span> <span class="i">require</span>(<span class="o">&#39;</span><span class="i">foo</span><span class="o">.</span><span class="i">js&#39;</span>);</pre>
+</td>
+</tr>
+</table>
+
+<p>Then, rather than having a 'project file' listing all the files the need to be built, you just tell the compiler about the root file, and it will dynamically include the required files recursively.</p>
+
+<p>Could a similar approach be adopted in F# to avoid having to specify the order of files via the project file? Instead, the order could be implicitly imply the ordering of files based on the dependencies between the files. Given the current 'open' syntax, I would imagine this could work something like:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">open</span> <span class="i">``Helpers.fs``</span></pre>
+</td>
+</tr>
+</table>
+
+<p>If the F# file contains a single module then that module contents would be made available, and if the F# file was declared as a single namespace, then that namespace would simply be opened.</p>
+
+<p>There could be some interesting edge cases if you wanted to specifically open one or more specific sub-modules or namespaces from within a file. It would also be interesting to hear if anyone else can think of any potential issues around a feature like this.</p>
+
+<p>I would also imagine that this kind of referencing would also decrease the requirement to use a heavy-weight IDE such as Visual Studio to keep project files in sync.</p>
+
+<h2>Alias Imports</h2>
+
+<p>The potential issue I raised in the previous section relating to referencing sub-modules or specific items in a namespace, led me back to the aliasing feature in C# which I used very occasionally. It would be interesting to know how feasible it would be to write something like:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span class="i">foo</span> <span class="o">=</span> <span class="k">open</span> <span class="i">some</span><span class="o">.</span><span class="i">long</span><span class="o">.</span><span class="k">namespace</span><span class="o">.</span><span class="i">structure</span><span class="o">.</span><span class="i">fooModule</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Combining this with the previous idea would create an inter-file referencing system very similar to node or browserify, where your imported module or namespace is always allocated to a symbol rather than into the root scope of the whole file.</p>
+
+<h2>Package Management</h2>
+
+<p>This leads me onto my final thought: package management.</p>
+
+<p>NuGet is an invaluable tool that I've used on every project I've worked on. However, its integration with MSBuild, its powershell based tooling and the overhead of setting up packages (in comparison to more modern package managers which integrate directly with remote git repositories aka bower), leaves a lot to be desired for the developer experience.</p>
+
+<p>What if there was some kind of way in which we could bake referencing third party assemblies directly into the F# language and compilation process and promote diversity in our package management options?</p>
+
+<p>My first idea came before thinking through the aforementioned language features and utilised generative type providers to build a NuGet type provider. The type provider could take a package name and version specification and return some root class from the package. This approach might work for some packages, but could be fraught with issues such as:
+- Packages with multiple namespaces
+- Referencing the same package from multiple files
+- Referencing multiple versions of the same package
+- Resolution of dependencies – how do you coordinate shared dependencies between multiple packages?
+- Would you need to use isolated app domains for each assembly referenced?</p>
+
+<p>The second (and probably cleaner) option would to bake support directly into the language.</p>
+
+<p>Much like type providers allow you to get types from anywhere, why not create some kind of assembly providers to allow you to create a provider to reference assemblies from a specific type of repository? Following the pattern of type providers, I'd guess the syntax might be nice to look something like:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">open</span> <span class="i">Github</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">fsharpfsharpx</span><span class="s">&quot;</span>,<span class="s">&quot;</span><span class="s">1</span><span class="s">.</span><span class="s">2</span><span class="s">.</span><span class="s">3</span><span class="s">beta</span><span class="s">&quot;</span><span class="o">&gt;</span></pre>
+</td>
+</tr>
+</table>
+
+<p>or</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">open</span> <span class="i">NuGet</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">fsharpx</span><span class="s">&quot;</span>,<span class="s">&quot;</span><span class="s">1</span><span class="s">.</span><span class="s">2</span><span class="s">.</span><span class="s">3</span><span class="s">&quot;</span><span class="o">&gt;</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Integrating this as a first class citizen of the F# compiler would allow simpler resolution of some of the issues listed above.
+- Packages with multiple namespaces would simply be exposed to the root scope of that file, but could then have the specific namespaces "opened" on subsequent lines.
+- Referencing the same package from multiple files could be simply duplicated during the compilation process.
+- Referencing multiple versions of the same package (I think) should be possible given the way in which the 'extern' keyword works in C# (though I'm a little hazy on this)</p>
+
+<h2>Closing</h2>
+
+<p>That's the end of my brain dump! I'd love to hear your thoughts and reasons why none of this would work ;) Here's the links to the feature requests I've opened for each of the things I've discussed:</p>
+
+<ul>
+<li><a href="https://fslang.uservoice.com/forums/245727-f-language/suggestions/6323146-describe-dependencies-between-files-by-extending">Describe dependencies between files by extending 'open' syntax</a></li>
+<li><a href="https://fslang.uservoice.com/forums/245727-f-language/suggestions/6323201-alias-imported-modules-and-namespaces">Alias imported modules and namespaces</a></li>
+<li><a href="https://fslang.uservoice.com/forums/245727-f-language/suggestions/6323264-compiler-integrated-assembly-imports-from-inside">Compiler integrated assembly imports from inside .fs files</a></li>
+</ul>
+
+<p>Existing feature suggestion for NuGet support in F# Interactive: <a href="https://fslang.uservoice.com/forums/245727-f-language/suggestions/5670137--package-directive-to-import-nuget-packages-in-f">#package directive to import NuGet packages in F# interactive</a></p>
+
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://twitter.com/mattdrivendev">MattDrivenDev</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+  	</div>
+    <script src="https://danielrbradley.github.io//javascripts/scale.fix.js"></script>
+  </body>
+</html>

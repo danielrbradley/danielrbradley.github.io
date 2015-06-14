@@ -5,22 +5,65 @@
     <description>FsBlog aims to be a blog-aware static site generator, mostly built in F#. But don't worry, you won't even need to know any F# to get up and running. So long as you are comfortable using a command line or terminal, and have a degree of familiarity with Markdown and Razor syntax - you're good to go!
 </description>
     <item>
-      <title>Getting Started</title>
-      <guid>https://danielrbradley.github.io//blog/2013/11-09-getting-started</guid>
-      <link>https://danielrbradley.github.io//blog/2013/11-09-getting-started/index.html</link>
-      <pubDate>Sat, 09 Nov 2013 12:38:14 GMT</pubDate>
-      <description>&lt;p&gt;If you've much experience with other static site generators like &lt;em&gt;Octopress&lt;/em&gt; or &lt;em&gt;Jekyll&lt;/em&gt; most of this should be fairly familiar, if not, hopefully it won't be too difficult to pick up.&lt;/p&gt;
-
+      <title>Reflections of a .Net'er in a Node World (Some F# Language Ideas)</title>
+      <guid>https://danielrbradley.github.io//blog/2014/08-20-reflections-of-node-for-fsharp</guid>
+      <link>https://danielrbradley.github.io//blog/2014/08-20-reflections-of-node-for-fsharp/index.html</link>
+      <pubDate>Wed, 20 Aug 2014 20:46:00 GMT</pubDate>
+      <description>
 
 </description>
     </item>
     <item>
-      <title>Hello, FsBlog!</title>
-      <guid>https://danielrbradley.github.io//blog/2013/11-08-hello-fsblog</guid>
-      <link>https://danielrbradley.github.io//blog/2013/11-08-hello-fsblog/index.html</link>
-      <pubDate>Fri, 08 Nov 2013 11:27:31 GMT</pubDate>
-      <description>&lt;p&gt;&lt;strong&gt;FsBlog&lt;/strong&gt; aims to be a blog-aware static site generator, mostly built in &lt;code&gt;F#&lt;/code&gt; for .NET and Mono developers.&lt;/p&gt;
+      <title>Experiences of C# Async in a Web Application</title>
+      <guid>https://danielrbradley.github.io//blog/2013/09-23-experiences-of-csharp-async-in-a-web-application</guid>
+      <link>https://danielrbradley.github.io//blog/2013/09-23-experiences-of-csharp-async-in-a-web-application/index.html</link>
+      <pubDate>Mon, 23 Sep 2013 14:59:00 GMT</pubDate>
+      <description>
 
+</description>
+    </item>
+    <item>
+      <title>Better MVC Enum Dropdown List Implementation</title>
+      <guid>https://danielrbradley.github.io//blog/2012/06-21-mvc-enum-dropdown-list</guid>
+      <link>https://danielrbradley.github.io//blog/2012/06-21-mvc-enum-dropdown-list/index.html</link>
+      <pubDate>Thu, 21 Jun 2012 11:10:00 GMT</pubDate>
+      <description>
+
+</description>
+    </item>
+    <item>
+      <title>Introducing FluentMySQL</title>
+      <guid>https://danielrbradley.github.io//blog/2012/02-09-introducing-fluentmysql</guid>
+      <link>https://danielrbradley.github.io//blog/2012/02-09-introducing-fluentmysql/index.html</link>
+      <pubDate>Thu, 09 Feb 2012 22:06:00 GMT</pubDate>
+      <description>
+
+</description>
+    </item>
+    <item>
+      <title>Code generation workflow brainstorming</title>
+      <guid>https://danielrbradley.github.io//blog/2012/01-17-code-generation-workflow-brainstorming</guid>
+      <link>https://danielrbradley.github.io//blog/2012/01-17-code-generation-workflow-brainstorming/index.html</link>
+      <pubDate>Tue, 17 Jan 2012 18:00:00 GMT</pubDate>
+      <description>
+
+</description>
+    </item>
+    <item>
+      <title>Creating possible combinations from a list of lists in F#</title>
+      <guid>https://danielrbradley.github.io//blog/2011/12-20-creating-possible-combinations</guid>
+      <link>https://danielrbradley.github.io//blog/2011/12-20-creating-possible-combinations/index.html</link>
+      <pubDate>Tue, 20 Dec 2011 17:41:00 GMT</pubDate>
+      <description>
+
+</description>
+    </item>
+    <item>
+      <title>A New Home</title>
+      <guid>https://danielrbradley.github.io//blog/2011/12-02-a-new-home</guid>
+      <link>https://danielrbradley.github.io//blog/2011/12-02-a-new-home/index.html</link>
+      <pubDate>Fri, 02 Dec 2011 20:00:00 GMT</pubDate>
+      <description>
 
 </description>
     </item>

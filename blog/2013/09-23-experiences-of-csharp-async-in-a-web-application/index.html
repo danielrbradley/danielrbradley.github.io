@@ -1,0 +1,208 @@
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>FsBlog</title>
+    <link rel="stylesheet" href="https://danielrbradley.github.io//stylesheets/styles.css">
+    <link rel="stylesheet" href="https://danielrbradley.github.io//stylesheets/pygment_trac.css">
+    <link rel="shortcut icon" href="https://danielrbradley.github.io//favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- FSharp.Formatting Styles -->
+  	<link rel="stylesheet" type="text/css" media="screen" href="https://danielrbradley.github.io//fsharp.formatting/tooltips.css" />
+  	<script type="text/javascript" src="https://danielrbradley.github.io//fsharp.formatting/tooltips.js"></script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+  <body>
+  	<div class="wrapper">
+	  <header>
+	  	  <a href="https://danielrbradley.github.io//index.html" class="falseheader">FsBlog</a>
+        <p>Blog aware, static site generation using F#.</p>
+
+        <p class="view"><a href="https://github.com/saxonmatt/FsBlog">View the Project on GitHub</a></p>
+        <ul>
+          <li><a href="https://github.com/saxonmatt/FsBlog">View On <strong>GitHub</strong></a></li>
+          <li><a href="https://github.com/saxonmatt/FsBlog/issues">Report a <strong>Bug</strong></a></li>
+          <li><a href="https://github.com/saxonmatt/FsBlog/issues/milestones">Check <strong>Progress</strong></a></li>
+        </ul>
+        <h2>Recent posts</h2>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2014/08-20-reflections-of-node-for-fsharp/index.html">Reflections of a .Net'er in a Node World (Some F# Language Ideas)</a></h3>
+    		    <p class="view"><small>    <time datetime="2014-08-20T21:46:00" pubdate data-updated="true">Aug 20, 2014</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2013/09-23-experiences-of-csharp-async-in-a-web-application/index.html">Experiences of C# Async in a Web Application</a></h3>
+    		    <p class="view"><small>    <time datetime="2013-09-23T15:59:00" pubdate data-updated="true">Sep 23, 2013</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/06-21-mvc-enum-dropdown-list/index.html">Better MVC Enum Dropdown List Implementation</a></h3>
+    		    <p class="view"><small>    <time datetime="2012-06-21T12:10:00" pubdate data-updated="true">Jun 21, 2012</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/02-09-introducing-fluentmysql/index.html">Introducing FluentMySQL</a></h3>
+    		    <p class="view"><small>    <time datetime="2012-02-09T22:06:00" pubdate data-updated="true">Feb 9, 2012</time>
+</small><br />
+
+</p>
+    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/01-17-code-generation-workflow-brainstorming/index.html">Code generation workflow brainstorming</a></h3>
+    		    <p class="view"><small>    <time datetime="2012-01-17T18:00:00" pubdate data-updated="true">Jan 17, 2012</time>
+</small><br />
+
+</p>
+      </header>
+      <section>
+		    
+<h1>Experiences of C# Async in a Web Application</h1>
+
+<h2>Why Use Async?</h2>
+
+<p>I’ve recently just done my first project embracing the new async features of C# 5.0 and thought I’d share some of my experiences using it out in the real world.</p>
+
+<p>The project I was building was a web application which uses RavenDB for most persistence tasks. which has full support for running all operations that run network commands asynchronously. This then leads to the ability to run a full, end-to-end asynchronous stack, meaning that threads can be much better utilised, as a method that is waiting on a slow operations such as communicating across a network, can release its thread while waiting for the operation to complete.</p>
+
+<h2>Writing Async Services &amp; Interfaces</h2>
+
+<p>The approach I normally take when creating complex web applications is to use the concepts of services to decouple the implementation of the storage and business rules from the web front end. This works great for designing simple integration tests to confirm that a service method is working as expected. A normal service interface might look something like this:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">public</span> <span class="k">interface</span> <span class="i">IService</span>
+{
+    <span class="i">SearchResult</span> <span class="i">Search</span>(<span class="i">Query</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">query</span>);
+}</pre>
+</td>
+</tr>
+</table>
+
+<p>To make this interface compatible with the async pattern, you simply wrap the return value of the action in a Task<></p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">public</span> <span class="k">interface</span> <span class="i">IService</span>
+{
+    <span class="i">Task</span><span class="o">&lt;</span><span class="i">SearchResult</span><span class="o">&gt;</span> <span class="i">Search</span>(<span class="i">Query</span> <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">query</span>);
+}</pre>
+</td>
+</tr>
+</table>
+
+<p>If a service method does not have a return type (returns void), then simply return a plain Task.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">public</span> <span class="k">interface</span> <span class="i">IService</span>
+{
+    <span class="i">Task</span> <span class="i">Delete</span>(<span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="i">string</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">id</span>);
+}</pre>
+</td>
+</tr>
+</table>
+
+<p>Async methods in this scenario should never return void, and should be considered an anti-pattern to avoid. More discussion is available in this MSDN article on Async Best Practices.</p>
+
+<h3>Exceptions</h3>
+
+<p>One aspect of service design which is affected by the move to an asynchronous stack is how you model exceptional results that can be handled by the web application.</p>
+
+<p>Typically, with synchronous services, custom exception types can be a neat way of representing unsuccessful results, which can optionally be caught at the web project level to be displayed nicely. However, in an asynchronous world, exceptions pose more challenges for handling due to possibly being wrapped in an aggregate exception.</p>
+
+<p>Because of this, I took the approach of using polymorphic result types to represent all possible types of result (apart from system failure). This works much like a discriminated union in F# the return type is simply a finite list of possible outcomes.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="i">CreateResult</span>
+{
+    <span class="k">private</span> <span class="i">CreateResult</span>()
+    {
+    }
+
+    <span class="k">public</span> <span class="i">sealed</span> <span class="k">class</span> <span class="i">Success</span> <span class="o">:</span> <span class="i">CreateResult</span>
+    {
+        <span class="k">public</span> <span onmouseout="hideTip(event, 'fs4', 5)" onmouseover="showTip(event, 'fs4', 5)" class="i">int</span> <span class="i">Id</span> { <span class="i">get</span>; <span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="i">set</span>; }
+    }
+
+    <span class="k">public</span> <span class="i">sealed</span> <span class="k">class</span> <span class="i">NameNotUnique</span> <span class="o">:</span> <span class="i">CreateResult</span>
+    {
+    }
+}</pre>
+</td>
+</tr>
+</table>
+
+<p>Using this kind of pattern, you can avoid using exceptions for any results that may want to be handled further down the stack.</p>
+
+<h2>Testing (with NUnit)</h2>
+
+<p>Writing unit and integration tests around asynchronous methods was surprisingly straight forward with only a few minor problems (which may be fixed in future versions).</p>
+
+<h3>Setup methods</h3>
+
+<p>The first problem I ran into with NUnit was the lack of support for writing an asynchronous setup method. NUnit currently requires the setup method to have a void return type and, as mentioned earlier, using a void return type with asynchronous methods is not fun. It means that the setup might not have finished setting everything up at the point when it starts running the test, resulting in inconsistent test environments.</p>
+
+<p>The first solution to this is to not mark the setup method as "async" and run all asynchronous code synchronously using Task.WaitAll(), or some similar method.</p>
+
+<p>The second solution is to create an asynchronous setup method, but rather than adding the NUnit setup attribute, call it directly on the first line of each test.</p>
+
+<p>Neither of these methods is ideal, though I'd tend to prefer the second method as this allows for the setup method to be parameterised.</p>
+
+<h3>Expected exceptions</h3>
+
+<p>The built-in NUnit asserts for expected exceptions do not support also checking inside of aggregate exception, and therefore I built my own assert helper class:</p>
+
+<script src="https://gist.github.com/danielrbradley/6671613.js"></script>
+
+<div class="tip" id="fs1">val query : Linq.QueryBuilder<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.query</div>
+<div class="tip" id="fs2">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = System.String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
+<div class="tip" id="fs3">val id : x:&#39;T -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.Operators.id</div>
+<div class="tip" id="fs4">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
+<div class="tip" id="fs5">val set : elements:seq&lt;&#39;T&gt; -&gt; Set&lt;&#39;T&gt; (requires comparison)<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.set</div>
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://twitter.com/mattdrivendev">MattDrivenDev</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+  	</div>
+    <script src="https://danielrbradley.github.io//javascripts/scale.fix.js"></script>
+  </body>
+</html>
