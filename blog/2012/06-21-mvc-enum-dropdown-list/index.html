@@ -1,64 +1,57 @@
-
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>FsBlog</title>
-    <link rel="stylesheet" href="https://danielrbradley.github.io//stylesheets/styles.css">
-    <link rel="stylesheet" href="https://danielrbradley.github.io//stylesheets/pygment_trac.css">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Better MVC Enum Dropdown List Implementation</title>
+    <meta name="description" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <link rel="shortcut icon" href="https://danielrbradley.github.io//favicon.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="https://danielrbradley.github.io//css/screen.css" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
     <!-- FSharp.Formatting Styles -->
-  	<link rel="stylesheet" type="text/css" media="screen" href="https://danielrbradley.github.io//fsharp.formatting/tooltips.css" />
-  	<script type="text/javascript" src="https://danielrbradley.github.io//fsharp.formatting/tooltips.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="https://danielrbradley.github.io//fsharp.formatting/tooltips.css" />
+    <script type="text/javascript" src="https://danielrbradley.github.io//fsharp.formatting/tooltips.js"></script>
     <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  </head>
-  <body>
-  	<div class="wrapper">
-	  <header>
-	  	  <a href="https://danielrbradley.github.io//index.html" class="falseheader">FsBlog</a>
-        <p>Blog aware, static site generation using F#.</p>
+</head>
+<body class="post-template nav-closed">
 
-        <p class="view"><a href="https://github.com/saxonmatt/FsBlog">View the Project on GitHub</a></p>
-        <ul>
-          <li><a href="https://github.com/saxonmatt/FsBlog">View On <strong>GitHub</strong></a></li>
-          <li><a href="https://github.com/saxonmatt/FsBlog/issues">Report a <strong>Bug</strong></a></li>
-          <li><a href="https://github.com/saxonmatt/FsBlog/issues/milestones">Check <strong>Progress</strong></a></li>
-        </ul>
-        <h2>Recent posts</h2>
-    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2014/08-20-reflections-of-node-for-fsharp/index.html">Reflections of a .Net'er in a Node World (Some F# Language Ideas)</a></h3>
-    		    <p class="view"><small>    <time datetime="2014-08-20T21:46:00" pubdate data-updated="true">Aug 20, 2014</time>
-</small><br />
+    <div class="nav">
+        
+        <a class="subscribe-button icon-feed" href="https://danielrbradley.github.io//rss.xml">Subscribe</a>
+    </div>
+    <span class="nav-cover"></span>
 
-</p>
-    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2013/09-23-experiences-of-csharp-async-in-a-web-application/index.html">Experiences of C# Async in a Web Application</a></h3>
-    		    <p class="view"><small>    <time datetime="2013-09-23T15:59:00" pubdate data-updated="true">Sep 23, 2013</time>
-</small><br />
+    <div class="site-wrapper">
 
-</p>
-    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/06-21-mvc-enum-dropdown-list/index.html">Better MVC Enum Dropdown List Implementation</a></h3>
-    		    <p class="view"><small>    <time datetime="2012-06-21T12:10:00" pubdate data-updated="true">Jun 21, 2012</time>
-</small><br />
+        
 
-</p>
-    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/02-09-introducing-fluentmysql/index.html">Introducing FluentMySQL</a></h3>
-    		    <p class="view"><small>    <time datetime="2012-02-09T22:06:00" pubdate data-updated="true">Feb 9, 2012</time>
-</small><br />
+<header class="main-header post-head no-cover">
+    <nav class="main-nav clearfix">
+        <a class="blog-logo" href="https://danielrbradley.github.io/">Home</a>
+        
+    </nav>
+</header>
 
-</p>
-    		    <h3 class="h2link"><a href="https://danielrbradley.github.io//blog/2012/01-17-code-generation-workflow-brainstorming/index.html">Code generation workflow brainstorming</a></h3>
-    		    <p class="view"><small>    <time datetime="2012-01-17T18:00:00" pubdate data-updated="true">Jan 17, 2012</time>
-</small><br />
+<main class="content" role="main">
+    <article class="post">
 
-</p>
-      </header>
-      <section>
-		    
-<h1>Better MVC Enum Dropdown List Implementation</h1>
+        <header class="post-header">
+            <h1 class="post-title">Better MVC Enum Dropdown List Implementation</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2012-06-21T12:10:00">2012-06-21T12:10:00</time>
+                   on aspnet csharp
+            </section>
+        </header>
 
+        <section class="post-content">
+          
 <p>Created a new ASP.NET MVC extension method for creating a “DropDownListFor” an Enum or nullable enum.</p>
 
 <p>Features:
@@ -72,12 +65,42 @@
 <script src="https://gist.github.com/danielrbradley/2965119.js"></script>
 
 
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://twitter.com/mattdrivendev">MattDrivenDev</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
-  	</div>
-    <script src="https://danielrbradley.github.io//javascripts/scale.fix.js"></script>
-  </body>
+        </section>
+
+        <footer class="post-footer">
+
+            
+
+            <section class="author">
+                <h4><a href="#">&nbsp;</a></h4>
+
+                
+                <div class="author-meta">
+                    
+                </div>
+            </section>
+
+            
+
+        </footer>
+
+    </article>
+</main>
+
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://danielrbradley.github.io/">DanielBradley.Net - The Argumentative Exception</a> &copy; 2015</section>
+            <section class="poweredby">Proudly published with <a href="https://github.com/fsprojects/FsBlog">FsBlog</a></section>
+        </footer>
+
+    </div>
+
+    
+
+    <script type="text/javascript" src="https://danielrbradley.github.io//js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="https://danielrbradley.github.io//js/index.js"></script>
+
+</body>
 </html>
