@@ -1,13 +1,13 @@
 <rss version="2.0">
   <channel>
     <title>DanielBradley.Net - The Argumentative Exception</title>
-    <link>https://danielrbradley.github.io/</link>
+    <link>https://www.danielbradley.net/</link>
     <description>A place for me to air my oppinions about all things programming.
 </description>
     <item>
       <title>Reflections of a .Net'er in a Node World (Some F# Language Ideas)</title>
-      <guid>https://danielrbradley.github.io//blog/2014/08-20-reflections-of-node-for-fsharp</guid>
-      <link>https://danielrbradley.github.io//blog/2014/08-20-reflections-of-node-for-fsharp/index.html</link>
+      <guid>https://www.danielbradley.net//blog/2014/08-20-reflections-of-node-for-fsharp</guid>
+      <link>https://www.danielbradley.net//blog/2014/08-20-reflections-of-node-for-fsharp/index.html</link>
       <pubDate>Wed, 20 Aug 2014 20:46:00 GMT</pubDate>
       <description>
 
@@ -15,8 +15,8 @@
     </item>
     <item>
       <title>Experiences of C# Async in a Web Application</title>
-      <guid>https://danielrbradley.github.io//blog/2013/09-23-experiences-of-csharp-async-in-a-web-application</guid>
-      <link>https://danielrbradley.github.io//blog/2013/09-23-experiences-of-csharp-async-in-a-web-application/index.html</link>
+      <guid>https://www.danielbradley.net//blog/2013/09-23-experiences-of-csharp-async-in-a-web-application</guid>
+      <link>https://www.danielbradley.net//blog/2013/09-23-experiences-of-csharp-async-in-a-web-application/index.html</link>
       <pubDate>Mon, 23 Sep 2013 14:59:00 GMT</pubDate>
       <description>
 
@@ -24,8 +24,8 @@
     </item>
     <item>
       <title>Better MVC Enum Dropdown List Implementation</title>
-      <guid>https://danielrbradley.github.io//blog/2012/06-21-mvc-enum-dropdown-list</guid>
-      <link>https://danielrbradley.github.io//blog/2012/06-21-mvc-enum-dropdown-list/index.html</link>
+      <guid>https://www.danielbradley.net//blog/2012/06-21-mvc-enum-dropdown-list</guid>
+      <link>https://www.danielbradley.net//blog/2012/06-21-mvc-enum-dropdown-list/index.html</link>
       <pubDate>Thu, 21 Jun 2012 11:10:00 GMT</pubDate>
       <description>
 
@@ -33,8 +33,8 @@
     </item>
     <item>
       <title>Introducing FluentMySQL</title>
-      <guid>https://danielrbradley.github.io//blog/2012/02-09-introducing-fluentmysql</guid>
-      <link>https://danielrbradley.github.io//blog/2012/02-09-introducing-fluentmysql/index.html</link>
+      <guid>https://www.danielbradley.net//blog/2012/02-09-introducing-fluentmysql</guid>
+      <link>https://www.danielbradley.net//blog/2012/02-09-introducing-fluentmysql/index.html</link>
       <pubDate>Thu, 09 Feb 2012 22:06:00 GMT</pubDate>
       <description>
 
@@ -42,8 +42,8 @@
     </item>
     <item>
       <title>Code generation workflow brainstorming</title>
-      <guid>https://danielrbradley.github.io//blog/2012/01-17-code-generation-workflow-brainstorming</guid>
-      <link>https://danielrbradley.github.io//blog/2012/01-17-code-generation-workflow-brainstorming/index.html</link>
+      <guid>https://www.danielbradley.net//blog/2012/01-17-code-generation-workflow-brainstorming</guid>
+      <link>https://www.danielbradley.net//blog/2012/01-17-code-generation-workflow-brainstorming/index.html</link>
       <pubDate>Tue, 17 Jan 2012 18:00:00 GMT</pubDate>
       <description>
 
@@ -51,8 +51,8 @@
     </item>
     <item>
       <title>Creating possible combinations from a list of lists in F#</title>
-      <guid>https://danielrbradley.github.io//blog/2011/12-20-creating-possible-combinations</guid>
-      <link>https://danielrbradley.github.io//blog/2011/12-20-creating-possible-combinations/index.html</link>
+      <guid>https://www.danielbradley.net//blog/2011/12-20-creating-possible-combinations</guid>
+      <link>https://www.danielbradley.net//blog/2011/12-20-creating-possible-combinations/index.html</link>
       <pubDate>Tue, 20 Dec 2011 17:41:00 GMT</pubDate>
       <description>
 
@@ -60,8 +60,8 @@
     </item>
     <item>
       <title>A New Home</title>
-      <guid>https://danielrbradley.github.io//blog/2011/12-02-a-new-home</guid>
-      <link>https://danielrbradley.github.io//blog/2011/12-02-a-new-home/index.html</link>
+      <guid>https://www.danielbradley.net//blog/2011/12-02-a-new-home</guid>
+      <link>https://www.danielbradley.net//blog/2011/12-02-a-new-home/index.html</link>
       <pubDate>Fri, 02 Dec 2011 20:00:00 GMT</pubDate>
       <description>
 
