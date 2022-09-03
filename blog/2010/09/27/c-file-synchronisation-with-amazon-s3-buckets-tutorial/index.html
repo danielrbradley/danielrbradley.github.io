@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>FsBlog</title>
+    <meta name="description" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="//www.danielbradley.net/favicon.png" />
+
+    <link rel="stylesheet" href="/vanilla.css" />
+  </head>
+  <body>
+    <header>
+      <h1><a href="/">DanielBradley.Net</a></h1>
+    </header>
+
+    <main id="content" role="main">
+      <h2>C# file synchronisation with Amazon S3 buckets tutorial</h2>
+
+  <h2>
+Use Case</h2>
+<p>
+Just started working with amazon's S3 buckets to hold a centralised filesystem to
+support a distributed workflow system. When the tasks in the workflow run on different
+physical machines in a viariety of locations so it's we need efficient ways of syncronising
+just small sub-sections of local files with a bucket.</p>
+<h2>
+The Plan</h2>
+<p>
+Amazons API allows listing objects by a key prefix&nbsp;i.e. search for all the
+files in a particular folder or sub-folders. This is a great way of syncronising
+folders where they might contain sub-folders, however we need to also list the same
+files from the local file system.</p>
+<p>
+The second task is then comparing files, I our system the synronisation is only
+performed in one direction at a time (pull or push) and therefore we can calculated
+which files have been:</p>
+<ul>
+<li>created (if it dosen't exist on the destination)</li>
+<li>deleted (if it dosen't exist on the source)</li>
+<li>modified (if the md5 of the local file doesn't match the etag on amazon)</li>
+</ul>
+<h2>
+Implementation</h2>
+<h3>
+Get the current amazon file list</h3>
+<p>
+I'm using amazon's own .NET API for this example. The first task is to request all
+the objects within a particular folder. First we create the S3 client:</p>
+<font color="#2b91af" size="2" face="Consolas, Courier New, Monospace">
+<p class="MsoNormal">
+<span style="font-size:
+9.5pt;font-family:Consolas, Courier New, Monospace;color:#2B91AF">
+AmazonS3Client</span><span style="font-size:9.5pt;font-family:Consolas, Courier New, Monospace"> 
+client = <span style="color:blue">new</span> <span style="color:#2B91AF">
+AmazonS3Client</span>(<span style="color:#A31515">"awsAccessKeyId"</span>,
+<span style="color:#A31515">"awsSecretAccessKey"</span>);<o:p></o:p></span></p>
+</font>
+<p>
+Then we get all the files (S3 objects) under the desired folder using a ListObjectsRequest
+and getting the keys and their corresponding etags out into a dictionary for later:</p>
+<p class="MsoNormal">
+<span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace; color: #2B91AF">
+ListObjectsResponse</span><span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace">
+folderObjects = client.ListObjects(<span style="color: blue">new</span> <span style="color: #2B91AF">
+  ListObjectsRequest</span>() { BucketName = <span style="color: #A31515">"dbradley-test-bucket"</span>,
+Prefix = <span style="color: #A31515">"test/folder"</span> });<o:p></o:p></span><br>
+<span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace; color: #2B91AF">
+Dictionary</span><span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace">&lt;<span style="color: blue">string</span>, <span style="color: blue">string</span>&gt; remoteObjects
+= folderObjects.S3Objects.ToDictionary(obj =&gt; <span class="skimlinks-unlinked">obj.Key</span>, obj =&gt; <span class="skimlinks-unlinked">obj.ETag</span>);<o:p></o:p></span></p>
+<h3>
+Get the current local file list</h3>
+<p>
+To get the local files in a similar format takes a little more work as filesystems
+don't naturally let you recursively get the files and paths&nbsp;for all sub folders.
+The approach to implement this behaviour is therefore going to be to implement a
+recursive function to dig down into all the sub directories.</p>
+<p>
+The output of this funciton needs to be something that's comparible with the previous
+result from the amazon bucket - a dictionary mapping the file path to its MD5 hash.</p>
+<p>
+The first step is to be able to generate an "amazon compatible" checksum
+of a file. We can use the&nbsp;ComputeHash function of the&nbsp;MD5CryptoServiceProvider
+class. This can be simply passed an stream and will return the hash as a byte array.
+However, to make this bit array into a hex encoded string we use the BitConverter
+ToString method, then simply strip the dashes and lower the case so that it will
+match the etag returned by amazon.</p>
+<p style="margin-left: 40px">
+Note: There's probably a more efficient method of doing the conversion from byte
+array to hex, but this will do for now!</p>
+<p>
+Therefore the hashing function looks something like:</p>
+<p class="MsoNormal">
+<span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace; color: blue">
+string</span><span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace">
+hash = <span style="color: #2B91AF">BitConverter</span>.ToString(crypto.ComputeHash(fileStream)).Replace(<span style="color: #A31515">"-"</span>, <span style="color: blue">string</span>.Empty).ToLower();<o:p></o:p></span></p>
+<p>
+The next consideration is the time it takes to calculate these hashes. Even the
+most efficient of MD5 implementation introduce a significant cost to calculate,
+especially with big files. Therefore, rather than returning a dictionary of file
+paths mapping to the actual string MD5 hash we will actually return the paths mapping
+to a function which, only&nbsp;when run, will return the MD5 hash of the given file.
+We can define this using a delegate function which doesn't take an input:</p>
+<p class="MsoNormal">
+<span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace"><span style="color: blue">delegate</span><span><br>
+</span>{<span><br>
+&nbsp;&nbsp;&nbsp; </span><span style="color: blue">using</span> (<span style="color: blue">var</span>
+stream = file.OpenRead())<span><br>
+&nbsp;&nbsp;&nbsp; </span>{<span><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="color: blue">return</span>
+<span style="color: #2B91AF">BitConverter</span>.ToString(crypto.ComputeHash(stream)).Replace(<span style="color: #A31515">"-"</span>, <span style="color: blue">string</span>.Empty).ToLower();<span><br>
+  &nbsp;&nbsp;&nbsp; </span>}<span><br>
+  </span>}</span></p>
+<p>
+Going back to the recursive function, we need to make sure that the file keys match
+with those on amazon. Amazon paths looks somthing like "test/folder/<span class="skimlinks-unlinked">file.txt</span>"
+and therefore we need to make all of our local paths relative to a specific folder.
+Therefore we will define two root functions for simplicity:</p>
+<ol>
+<li>Get all the files within a directory (and assume that the given directory is the
+root directory in amazon).</li>
+<li>Get all the files within a directory and specify the current directories path
+on amazon.</li>
+</ol>
+<p>
+Each of these funcitons will then call the internal recursive method. This internal
+method then simply returns the keys and hash functions of each file in it's
+current directory combinded with the keys and hash functions of each of it's
+sub-directories.
+</p>
+<h3>
+Bringing it all together.</h3>
+<p>
+So, finally here's the code to get a local directory as a set of amazon compatible
+paths mapping to an Amazon-compatible md5 hash.</p>
+<p class="MsoNormal">
+<span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace; color: blue">
+public</span><span style="font-size: 9.5pt; font-family: Consolas"> <span style="color: blue">
+static</span> <span style="color: #2B91AF">Dictionary</span>&lt;<span style="color: blue">string</span>,
+<span style="color: #2B91AF">Func</span>&lt;<span style="color: blue">string</span>&gt;&gt;
+GetLocalFileKeys(<span style="color: #2B91AF">DirectoryInfo</span> directory)</span><span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace"><br>
+  {<span>&nbsp;&nbsp;&nbsp; </span><span style="color: blue">return</span> GetLocalFileKeys(directory,
+  <span style="color: blue">string</span>.Empty, <span style="color: blue">new</span>
+  <span style="color: #2B91AF">MD5CryptoServiceProvider</span>()).ToDictionary(kvp
+  =&gt; <span class="skimlinks-unlinked">kvp.Key</span>, kvp =&gt; <span class="skimlinks-unlinked">kvp.Value</span>);<br>
+  }<o:p><br>
+&nbsp;</o:p></span><span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace;
+color: blue"><br>
+public</span><span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace">
+<span style="color: blue">static</span> <span style="color: #2B91AF">Dictionary</span>&lt;<span style="color: blue">string</span>, <span style="color: #2B91AF">Func</span>&lt;<span style="color: blue">string</span>&gt;&gt; GetLocalFileKeys(<span style="color: #2B91AF">DirectoryInfo</span>
+directory, <span style="color: blue">string</span> rootPath)</span><span style="font-size: 9.5pt;
+  font-family: Consolas"><br>
+  {<span><br>
+    &nbsp;&nbsp;&nbsp; </span><span style="color: blue">return</span> GetLocalFileKeys(directory,
+  rootPath, <span style="color: blue">new</span> <span style="color: #2B91AF">MD5CryptoServiceProvider</span>()).ToDictionary(kvp
+  =&gt; <span class="skimlinks-unlinked">kvp.Key</span>, kvp =&gt; <span class="skimlinks-unlinked">kvp.Value</span>);<br>
+  }</span><span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace;
+    color: blue"><br>
+    <br>
+    private</span><span style="font-size: 9.5pt; font-family: Consolas"> <span style="color: blue">
+      static</span> <span style="color: #2B91AF">IEnumerable</span>&lt;<span style="color: #2B91AF">KeyValuePair</span>&lt;<span style="color: blue">string</span>, <span style="color: #2B91AF">Func</span>&lt;<span style="color: blue">string</span>&gt;&gt;&gt; GetLocalFileKeys(<span style="color: #2B91AF">DirectoryInfo</span>
+      directory, <span style="color: blue">string</span> currentPath, <span style="color: #2B91AF">
+        MD5CryptoServiceProvider</span> crypto)</span><span style="font-size: 9.5pt; font-family: Consolas, Courier New, Monospace"><br>
+          {<span><br>
+            &nbsp;&nbsp;&nbsp; </span><span style="color: blue">if</span> (directory == <span style="color: blue">null</span>)<span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="color: blue">throw</span>
+          <span style="color: blue">new</span> <span style="color: #2B91AF">ArgumentNullException</span>(<span style="color: #A31515">"directory"</span>, <span style="color: #A31515">
+              "directory is null."</span>);<o:p><br>
+&nbsp;</o:p><span><br>
+&nbsp;&nbsp;&nbsp; </span><span style="color: blue">return</span> directory.EnumerateFiles().Select<span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>(<span><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>file =&gt; <span>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="color: blue">
+      new</span> <span style="color: #2B91AF">KeyValuePair</span>&lt;<span style="color: blue">string</span>,
+          <span style="color: #2B91AF">Func</span>&lt;<span style="color: blue">string</span>&gt;&gt;<span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </span>(<span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </span>currentPath + <span style="color: #A31515">"/"</span> + <span class="skimlinks-unlinked">file.Name</span>,<span><br>
+            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color: blue">delegate</span><span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>{<span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span><span style="color: blue">using</span> (<span style="color: blue">var</span>
+          stream = file.OpenRead())<span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </span>{<span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </span><span style="color: blue">return</span> <span style="color: #2B91AF">BitConverter</span>.ToString(crypto.ComputeHash(stream)).Replace(<span style="color: #A31515">"-"</span>, <span style="color: blue">string</span>.Empty).ToLower();<span><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>}<span><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>}<span><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>)<span><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>)<span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>.Union<span><br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>(<span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>directory.EnumerateDirectories().SelectMany<span><br>
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>(<span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>childDir =&gt; GetLocalFileKeys(childDir,
+          currentPath + <span class="skimlinks-unlinked">childDir.Name</span> + <span style="color: #A31515">"/"</span>,
+          crypto)<span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>)<span><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>);<br>
+          }</span></p>
+<p>
+One observation of the internal function is that it is using IEnumerable of KeyValuePair
+rather than an actual dictionary. This is due to dictionaries not being able to
+add collections of new pairs at once (as we need to do this when calling the function
+recursively so that the results are presented in a flat collection).</p>
+<a name="feedback"></a>        
+<span class="postFoot">
+    Posted on Monday, September 27, 2010 9:43 AM | <a href="#top">Back to top</a>
+</span>
+    </main>
+
+    <footer>
+      <section>
+        <a href="/">danielbradley.net - The Argumentative Exception</a>
+        &copy; 2022
+      </section>
+    </footer>
+  </body>
+</html>

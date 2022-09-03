@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Daniel Bradley</title>
+    <meta name="description" content="Personal website of Daniel Bradley" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <link rel="stylesheet" href="/vanilla.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Daniel Bradley</h1>
+    </header>
+
+    <main>
+      <h2>
+        Recursively searching controls in ASP.NET web forms using generics,
+        lambda expressions and extension methods!
+      </h2>
+
+      <p>
+        <a
+          href="https://web.archive.org/web/20201030044340/http://msdn.microsoft.com/en-us/library/bb383977.aspx"
+          >Extension methods</a
+        >
+        were introduced with the .NET 3.5 framework as a mechanism to add
+        methods to extend existing types without modifying the original
+        assembly. This is how the Linq methods were implemented to enable some
+        very powerfull predicate function based operations to be performed over
+        all existing collection types.
+      </p>
+      <p>
+        Searching for web controls on a page is one of those tasks that seems to
+        come up for all kinds of reason while programming using web forms. I was
+        reminded of this problem recently:
+      </p>
+      <p>
+        I'm personally favoring the
+        <a
+          href="https://web.archive.org/web/20201030044340/http://www.asp.net/mvc"
+          >MVC framework</a
+        >
+        now, however, while at work the other day one of my collegues was
+        working through an old web forms project of mine where a variable number
+        of checkbox controls were being rendered in two separate lists on the
+        page. Them, on post-back he needed to get a list of the checkboxes that
+        were now checked.
+      </p>
+      <p>
+        Lambda expressions combined with recursive calls are a very powerful way
+        of seaching through a pages controls. Originally I just used a simple
+        funciton defined in the code-behind, however a much cleaner and reusable
+        method would be to define the functions on the control class its self.
+      </p>
+      <p>
+        That's where extension methods come in. The code below shows a nice
+        simple example of a couple of useful control search functions which then
+        appear inside any object inheriting from
+        <span class="skimlinks-unlinked">System.Web.UI.Control</span>.
+      </p>
+      <p>
+        To define extension methods on an exising class in C# you would do the
+        following:
+      </p>
+      <p>
+        Firstly create a public static class with whatever name you like in
+        whatever namespace you like (I've defined mine in
+        DanielBradley.WebControlExtensions.ControlExtensions).
+      </p>
+      <p>
+        Secondly, define a public static (shared) function where you specify the
+        first parameter with the keyword "this" and it's type as the type of the
+        class you want to extend.
+      </p>
+      <p>
+        Finally, define everything else exactly how you would normally, with the
+        correct return type, your other parameters and you simply look at your
+        first parameter as the current object the functions is running in.
+      </p>
+      <p>
+        <span style="font-size: 10pt; font-family: Courier New; color: blue"
+          >using</span
+        ><span style="font-size: 10pt; font-family: Courier New"> System;</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New; color: blue"
+          >using</span
+        ><span style="font-size: 10pt; font-family: Courier New">
+          System.Collections.Generic;</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New; color: blue"
+          >using</span
+        ><span style="font-size: 10pt; font-family: Courier New">
+          <span class="skimlinks-unlinked">System.Linq</span>;</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New; color: blue"
+          >using</span
+        ><span style="font-size: 10pt; font-family: Courier New">
+          <span class="skimlinks-unlinked">System.Text</span>;</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New; color: blue"
+          >using</span
+        ><span style="font-size: 10pt; font-family: Courier New">
+          <span class="skimlinks-unlinked">System.Web.UI</span>;</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New">
+          <o:p> &nbsp;</o:p>
+        </span>
+        <br />
+        <span style="font-size: 10pt; font-family: Courier New; color: blue"
+          >namespace</span
+        ><span style="font-size: 10pt; font-family: Courier New">
+          DanielBradley.WebControlExtensions</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New">{</span><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp; </span>
+          <span style="color: blue">public</span>
+          <span style="color: blue">static</span>
+          <span style="color: blue">class</span>
+          <span style="color: #2b91af">ControlExtensions</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp; </span> {</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">public</span>
+          <span style="color: blue">static</span>
+          <span style="color: #2b91af">Control</span>
+          FirstOrDefault&lt;TSource&gt;(<span style="color: blue">this</span>
+          <span style="color: #2b91af">Control</span> ctrl,
+          <span style="color: #2b91af">Func</span>&lt;TSource,
+          <span style="color: blue">bool</span>&gt; predicate)
+          <span style="color: blue">where</span> TSource :
+          <span style="color: #2b91af">Control</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>{</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: #2b91af">Type</span> targetType =
+          <span style="color: blue"> typeof</span>(TSource);</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">foreach</span> (<span
+            style="color: #2b91af"
+            >Control</span
+          >
+          c <span style="color: blue">in</span> ctrl.Controls)</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          >{</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">if</span> (c.GetType() == targetType
+          &amp;&amp; predicate((TSource)c))</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          >{</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">return</span> c;</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          >}</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: #2b91af">Control</span> recMatch =
+          c.FirstOrDefault&lt;TSource&gt;(predicate);</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">if</span> (recMatch !=
+          <span style="color: blue">null</span>)</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          >{</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">return</span> recMatch;</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          >}</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          >}</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">return</span>
+          <span style="color: blue">null</span>;</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>}</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New">
+          <o:p> &nbsp;</o:p>
+        </span>
+        <br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">public</span>
+          <span style="color: blue">static</span>
+          <span style="color: #2b91af">IEnumerable</span>&lt;TSource&gt;
+          FindRecursive&lt;TSource&gt;(<span style="color: blue">this</span>
+          <span style="color: #2b91af">Control</span> ctrl,
+          <span style="color: #2b91af">Func</span>&lt;TSource,
+          <span style="color: blue"> bool</span>&gt; predicate)
+          <span style="color: blue">where</span> TSource :
+          <span style="color: #2b91af">Control</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>{</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">if</span> (ctrl ==
+          <span style="color: blue">null</span> ||
+          <span class="skimlinks-unlinked">ctrl.Controls.Count</span> ==
+          0)</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">return</span>
+          <span style="color: blue">new</span>
+          <span style="color: #2b91af">List</span>&lt;TSource&gt;();</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New">
+          <o:p> &nbsp;</o:p>
+        </span>
+        <br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span
+          ><span style="color: blue">return</span>
+          ctrl.Controls.OfType&lt;TSource&gt;().Where(predicate).Union(</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span class="skimlinks-unlinked">ctrl.Controls.Cast</span>&lt;<span
+            style="color: #2b91af"
+            >Control</span
+          >&gt;().SelectMany(c =&gt;
+          c.FindRecursive&lt;TSource&gt;(predicate)));</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>}</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New">
+          <o:p> &nbsp;</o:p>
+        </span>
+        <br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">public</span>
+          <span style="color: blue">static</span>
+          <span style="color: #2b91af">IEnumerable</span>&lt;TSource&gt;
+          FindRecursive&lt;TSource&gt;(<span style="color: blue">this</span>
+          <span style="color: #2b91af">Control</span> ctrl,
+          <span style="color: #2b91af">Func</span>&lt;TSource,
+          <span style="color: blue"> bool</span>&gt; predicate,
+          <span style="color: blue">int</span> depthLimit)
+          <span style="color: blue">where</span> TSource :
+          <span style="color: #2b91af">Control</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>{</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">if</span> (ctrl ==
+          <span style="color: blue">null</span> ||
+          <span class="skimlinks-unlinked">ctrl.Controls.Count</span> ==
+          0)</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">return</span>
+          <span style="color: blue">new</span>
+          <span style="color: #2b91af">List</span>&lt;TSource&gt;();</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New">
+          <o:p> &nbsp;</o:p>
+        </span>
+        <br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">if</span> (depthLimit == 0)</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          >{</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span
+          ><span style="color: blue">return</span>
+          ctrl.Controls.OfType&lt;TSource&gt;().Where(predicate);</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          >}</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">else</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          >{</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">return</span>
+          ctrl.Controls.OfType&lt;TSource&gt;().Where(predicate).Union(</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span class="skimlinks-unlinked">ctrl.Controls.Cast</span>&lt;<span
+            style="color: #2b91af"
+            >Control</span
+          >&gt;().SelectMany(c =&gt; c.FindRecursive&lt;TSource&gt;(predicate,
+          depthLimit - 1)));</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          >}</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>}</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp; </span> }</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New">}</span><br />
+        <o:p>&nbsp;</o:p>
+      </p>
+      <p>
+        Extension methods in C# are implemented as a specific language feature,
+        however, you can also implement
+        <a
+          href="https://web.archive.org/web/20201030044340/http://msdn.microsoft.com/en-us/library/bb384936.aspx"
+        >
+          extension methods in VB.NET</a
+        >
+        through use of attributes:
+      </p>
+      <p>Firstly import System.Runtime.CompilerServices.</p>
+      <p>
+        Secondly define your (public) function, add the Extension attribute and
+        define a first parameter as the type you want to add the function to
+        (into which the object your function is running on is passed in to).
+      </p>
+      <p>
+        Here's the equivilant VB code (actually re-written not auto-converted :)
+      </p>
+      <p>
+        <span style="font-size: 10pt; font-family: Courier New; color: blue"
+          >Imports</span
+        ><span style="font-size: 10pt; font-family: Courier New">
+          System.Runtime.CompilerServices</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New; color: blue"
+          >Imports</span
+        ><span style="font-size: 10pt; font-family: Courier New">
+          <span class="skimlinks-unlinked">System.Web.UI</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New">
+          <o:p> &nbsp;</o:p>
+        </span>
+        <br />
+        <span style="font-size: 10pt; font-family: Courier New; color: blue"
+          >Public</span
+        ><span style="font-size: 10pt; font-family: Courier New">
+          <span style="color: blue">Module</span> ControlExtensions</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New">
+          <o:p> &nbsp;</o:p>
+        </span>
+        <br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp; </span>&lt;Extension()&gt; _</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Public</span>
+          <span style="color: blue">Function</span> FirstOrDefault(<span
+            style="color: blue"
+            >Of</span
+          >
+          TSource <span style="color: blue"> As</span> Control)(<span
+            style="color: blue"
+            >ByVal</span
+          >
+          ctrl <span style="color: blue"> As</span> Control,
+          <span style="color: blue">ByVal</span> predicate
+          <span style="color: blue"> As</span> Func(<span style="color: blue"
+            >Of</span
+          >
+          TSource, <span style="color: blue"> Boolean</span>))</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Dim</span> targetType =
+          <span style="color: blue">GetType</span>(TSource)</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">For</span>
+          <span style="color: blue">Each</span> c
+          <span style="color: blue">As</span> Control
+          <span style="color: blue">In</span> ctrl.Controls</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">If</span> c.GetType.Equals(targetType)
+          <span style="color: blue"> AndAlso</span> predicate(c)
+          <span style="color: blue">Then</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Return</span> c</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">End</span>
+          <span style="color: blue">If</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Dim</span> recMatch =
+          c.FirstOrDefault(predicate)</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;</span
+          ></span
+        ><span style="font-size: 10pt; font-family: Courier New; color: blue"
+          >If</span
+        ><span style="font-size: 10pt; font-family: Courier New">
+          recMatch <span style="color: blue">IsNot</span>
+          <span style="color: blue">Nothing</span>
+          <span style="color: blue">Then</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Return</span> recMatch</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">End</span>
+          <span style="color: blue">If</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Next</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Return</span>
+          <span style="color: blue">Nothing</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp; </span><span style="color: blue">End</span>
+          <span style="color: blue">Function</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New; color: blue">
+        </span>
+        <br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp; </span>&lt;Extension()&gt; _</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Public</span>
+          <span style="color: blue">Function</span> FindRecursive(<span
+            style="color: blue"
+            >Of</span
+          >
+          TSource <span style="color: blue"> As</span> Control)(<span
+            style="color: blue"
+            >ByVal</span
+          >
+          ctrl <span style="color: blue"> As</span> Control,
+          <span style="color: blue">ByVal</span> predicate
+          <span style="color: blue"> As</span> Func(<span style="color: blue"
+            >Of</span
+          >
+          TSource, <span style="color: blue"> Boolean</span>))</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">If</span> ctrl
+          <span style="color: blue">Is</span>
+          <span style="color: blue">Nothing</span>
+          <span style="color: blue">OrElse</span>
+          <span class="skimlinks-unlinked">ctrl.Controls.Count</span> = 0
+          <span style="color: blue">Then</span>
+          <span style="color: blue"> Return</span>
+          <span style="color: blue">New</span> List(<span style="color: blue"
+            >Of</span
+          >
+          TSource)</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New">
+          <o:p> &nbsp;</o:p>
+        </span>
+        <br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Return</span> ctrl.Controls.OfType(<span
+            style="color: blue"
+            >Of</span
+          >
+          TSource).Where(predicate).Union( _</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span class="skimlinks-unlinked">ctrl.Controls.Cast</span>(<span
+            style="color: blue"
+            >Of</span
+          >
+          Control).SelectMany(<span style="color: blue">Of</span> TSource)(<span
+            style="color: blue"
+            >Function</span
+          >(c) c.FindRecursive(predicate)))</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp; </span><span style="color: blue">End</span>
+          <span style="color: blue">Function</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New; color: blue">
+          <o:p> &nbsp;</o:p>
+        </span>
+        <br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp; </span>&lt;Extension()&gt; _</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Public</span>
+          <span style="color: blue">Function</span> FindRecursive(<span
+            style="color: blue"
+            >Of</span
+          >
+          TSource <span style="color: blue"> As</span> Control)(<span
+            style="color: blue"
+            >ByVal</span
+          >
+          ctrl <span style="color: blue"> As</span> Control,
+          <span style="color: blue">ByVal</span> predicate
+          <span style="color: blue"> As</span> Func(<span style="color: blue"
+            >Of</span
+          >
+          TSource, <span style="color: blue"> Boolean</span>),
+          <span style="color: blue">ByVal</span> depthLimit
+          <span style="color: blue">As</span>
+          <span style="color: blue">Integer</span>)</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">If</span> ctrl
+          <span style="color: blue">Is</span>
+          <span style="color: blue">Nothing</span>
+          <span style="color: blue">OrElse</span>
+          <span class="skimlinks-unlinked">ctrl.Controls.Count</span> = 0
+          <span style="color: blue">Then</span>
+          <span style="color: blue"> Return</span>
+          <span style="color: blue">New</span> List(<span style="color: blue"
+            >Of</span
+          >
+          TSource)</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New">
+          <o:p> &nbsp;</o:p>
+        </span>
+        <br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">If</span> depthLimit = 0
+          <span style="color: blue"> Then</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Return</span> ctrl.Controls.OfType(<span
+            style="color: blue"
+            >Of</span
+          >
+          TSource).Where(predicate)</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Else</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">Return</span> ctrl.Controls.OfType(<span
+            style="color: blue"
+            >Of</span
+          >
+          TSource).Where(predicate).Union( _</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span class="skimlinks-unlinked">ctrl.Controls.Cast</span>(<span
+            style="color: blue"
+            >Of</span
+          >
+          Control).SelectMany(<span style="color: blue">Of</span> TSource)(<span
+            style="color: blue"
+            >Function</span
+          >(c) c.FindRecursive(predicate, depthLimit - 1)))</span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
+          ><span style="color: blue">End</span>
+          <span style="color: blue">If</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New"
+          ><span>&nbsp;&nbsp;&nbsp; </span><span style="color: blue">End</span>
+          <span style="color: blue">Function</span></span
+        ><br />
+        <span style="font-size: 10pt; font-family: Courier New; color: blue">
+          <o:p> &nbsp;</o:p>
+        </span>
+        <br />
+        <span style="font-size: 10pt; font-family: Courier New; color: blue"
+          >End</span
+        ><span style="font-size: 10pt; font-family: Courier New">
+          <span style="color: blue">Module</span></span
+        >
+      </p>
+
+      <p>
+        Having written these examples there's loads of ideas of useful stuff
+        that's springing to mind that you could extend from here:
+      </p>
+      <ul>
+        <li>Make the predicate optional.</li>
+        <li>
+          Write some generic tree search implementations on the IEnumerable
+          interface.
+        </li>
+        <li>
+          Any other recursive based algorithms that could be useful on sets?
+        </li>
+      </ul>
+      <p>
+        Anyway, there's the post, hope this is useful - might perhaps pad this
+        out a little then move it into a project on github or something if it's
+        potentially useful to people.
+      </p>
+      <p>Daniel</p>
+    </main>
+
+    <footer>
+      <section>
+        <a href="/">danielbradley.net - The Argumentative Exception</a>
+        &copy; 2022
+      </section>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Daniel Bradley</title>
+    <meta name="description" content="Personal website of Daniel Bradley" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <link rel="stylesheet" href="/vanilla.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Daniel Bradley</h1>
+    </header>
+
+    <main id="content" role="main">
+      <h2>HOWTO: Remove files from a git repository which should be ignored</h2>
+      <p>
+        In the last year or so I’ve discovered the wonders of GIT for managing
+        source code and we’ve now moved the majority of our live code base in to
+        repositories at work.
+      </p>
+      <p>
+        However, as with most learning curves, you make some mistakes at first.
+        One thing that’s been really bugging me is that I didn’t know about the
+        ".gitignore" file when creating my first few repositories. This means
+        that all the binary files were also initially added. As soon as I learnt
+        about the ignore file I went back and added it. Problem is, the git
+        ignore file only limits finding new files to add, if the file is already
+        being tracked then the ignore file has no effect. Have tried to find
+        solutions, but most of the stuff seems to refer to "filter-branch" which
+        to be honest I don’t fully understand.
+      </p>
+      <p>So, here’s my:</p>
+      <h2>
+        Super Simple Method of Removing Files/Folders that should be ignored
+      </h2>
+      <p>Example: you wanted to ignore the "bin" folder from your project.</p>
+      <ul>
+        <li>
+          Make sure you have the correct line in your git ignore: e.g.
+          <br />
+          [Bb]in*/<br />
+          (This will match any folder starting with the word "Bin" or "bin")
+        </li>
+        <li>
+          Move the file or folder that’s currently being tracked to somewhere
+          that it won’t get committed.<br />
+          Either move it out of the folder completely (we’ll put it back later)
+          or just rename it to something else that will get ignored e.g.
+          renaming "bin" to "bin_" would work for me.
+        </li>
+        <li>
+          Commit the changes (check it contains removes for each of the files
+          you should be ignoring, perhaps the updated ".gitignore" file, but
+          make sure it isn’t re-adding the files from your temporary directory
+          or filename!)
+        </li>
+        <li>
+          Now simply rename your files or folders back and now it won’t be
+          appearing.
+        </li>
+      </ul>
+      <p>
+        Perhaps there’s some kind of smarter way of doing this, but I just find
+        this method really easy to understand! It certainly made my day when I
+        finally got rid of these files!
+      </p>
+    </main>
+
+    <footer>
+      <section>
+        <a href="/">danielbradley.net - The Argumentative Exception</a>
+        &copy; 2022
+      </section>
+    </footer>
+  </body>
+</html>
