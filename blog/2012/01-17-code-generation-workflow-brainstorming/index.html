@@ -1,133 +1,167 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <title>Code generation workflow brainstorming</title>
-    <meta name="description" />
+    <meta name="description" content="Personal website of Daniel Bradley" />
 
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="shortcut icon" href="http://www.danielbradley.net//favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
-    <link rel="stylesheet" type="text/css" href="http://www.danielbradley.net//css/screen.css" />
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" href="/vanilla.css" />
+  </head>
+  <body>
+    <nav><a href="/">Home</a></nav>
+    <header>
+      <h1>Code generation workflow brainstorming</h1>
+    </header>
 
-    <!-- FSharp.Formatting Styles -->
-    <link rel="stylesheet" type="text/css" media="screen" href="http://www.danielbradley.net//fsharp.formatting/tooltips.css" />
-    <script type="text/javascript" src="http://www.danielbradley.net//fsharp.formatting/tooltips.js"></script>
-    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-</head>
-<body class="post-template nav-closed">
+    <main role="main">
+      <article>
+        <p>
+          Since starting work at
+          <a href="http://pebblecode.com/">Pebble {code}</a> one of the exciting
+          new areas that I’ve been looking into is
+          <a href="http://en.wikipedia.org/wiki/Automatic_programming"
+            >code generation (or automatic programming)</a
+          >. The use case is simply auto-generating the bulk of database access
+          code directly from the database model its self allowing quicker
+          changes to the core model as you’re not having to re-write database
+          access code along with every model change. This also allows for a
+          higher level of abstraction, therefore allowing higher productivity
+          with less code to directly maintain.
+        </p>
 
-    <div class="nav">
-        
-        <a class="subscribe-button icon-feed" href="http://www.danielbradley.net//rss.xml">Subscribe</a>
-    </div>
-    <span class="nav-cover"></span>
+        <p>
+          The current code generation approach we’re using is based around the
+          open source
+          <a href="http://www.mygenerationsoftware.com/">MyGeneration</a> tool.
+          For the design of the model we’re using
+          <a href="http://www.mysql.com/products/workbench/">MySQL workbench</a>
+          for modelling the database. For the database interaction we’re using
+          the
+          <a href="http://code.google.com/p/mybatisnet/"
+            >Apache iBatis project</a
+          >
+          for database mapping.
+        </p>
 
-    <div class="site-wrapper">
+        <p>
+          The current workflow for making a change to the model goes something
+          like this:
+        </p>
 
-        
+        <ol>
+          <li>Create table(s) in the MySql workbench model</li>
+          <li>
+            Export updated create script
+            <ol>
+              <li>
+                Also create any migration scripts required to update the
+                existing database with your changes
+              </li>
+            </ol>
+          </li>
+          <li>Re-create your local development database with the changes</li>
+          <li>Open MyGeneration and add any required metadata</li>
+          <li>Select the tables and objects you want to re-generate</li>
+          <li>Execute code generation</li>
+          <li>Perform required manual integration of the generated code</li>
+          <li>
+            Add any additional handmade code to compliment the generated code
+          </li>
+        </ol>
 
-<header class="main-header post-head no-cover">
-    <nav class="main-nav clearfix">
-        <a class="blog-logo" href="http://www.danielbradley.net/">Home</a>
-        
-    </nav>
-</header>
+        <p>
+          This current workflow can introduce friction to integration in two
+          main areas: 1. Generating code off the local database does not ensure
+          that the database has the latest set of changes, or is even generated
+          from the current branch of development. Re-deployment of the database
+          can also be a time-consuming process if it’s having to be run multiple
+          times. 2. The MyGeneration tool has a single install path and is
+          therefore a shared component, not specific to the current branch of
+          development or included alongside the source control.
+        </p>
 
-<main class="content" role="main">
-    <article class="post">
+        <p>
+          Therefore, my current ideas around this area are to research the
+          feasibility of two main changes.
+        </p>
 
-        <header class="post-header">
-            <h1 class="post-title">Code generation workflow brainstorming</h1>
-            <section class="post-meta">
-                <time class="post-date" datetime="2012-01-17T18:00:00">2012-01-17T18:00:00</time>
-                   on mysql codegen database
-            </section>
-        </header>
+        <h2>Remove deployment to an actual database before generating code</h2>
 
-        <section class="post-content">
-          
-<p>Since starting work at <a href="http://pebblecode.com/">Pebble {code}</a> one of the exciting new areas that I’ve been looking into is <a href="http://en.wikipedia.org/wiki/Automatic_programming">code generation (or automatic programming)</a>. The use case is simply auto-generating the bulk of database access code directly from the database model its self allowing quicker changes to the core model as you’re not having to re-write database access code along with every model change. This also allows for a higher level of abstraction, therefore allowing higher productivity with less code to directly maintain.</p>
+        <p>
+          The ideal solution here would be to have a method of extracting the
+          database metadata from as close to the original model as possible. A
+          good point of interception could be the SQL database create script.
+          Theoretically it could be possible to work directly with the workbench
+          files, however these are far less stable in standardisation than SQL
+          and would be more likely to change and require more on-going work,
+          whereas the SQL syntax is very strictly defined.
+        </p>
 
-<p>The current code generation approach we’re using is based around the open source <a href="http://www.mygenerationsoftware.com/">MyGeneration</a> tool. For the design of the model we’re using <a href="http://www.mysql.com/products/workbench/">MySQL workbench</a> for modelling the database. For the database interaction we’re using the <a href="http://code.google.com/p/mybatisnet/">Apache iBatis project</a> for database mapping.</p>
+        <p>
+          My current research in this area is to use
+          <a href="http://www.antlr.org/">ANTLR</a> to parse the
+          <a href="http://www.antlr.org/grammar/1242202695031/mysql-grammar.zip"
+            >MySQL grammar</a
+          >
+          (zip file), and create an object model to represent the created
+          database. Initially this would just be supporting table creation
+          statements, but could theoretically also extend to views and stored
+          procedures. A good example of the object model is the
+          <a
+            href="http://mygeneration.svn.sourceforge.net/viewvc/mygeneration/trunk/mymeta/Interfaces/"
+            >interfaces</a
+          >
+          used in the
+          <a
+            href="http://mygeneration.svn.sourceforge.net/viewvc/mygeneration/trunk/mymeta/"
+            >MyMeta project</a
+          >
+          of MyGeneration.
+        </p>
 
-<p>The current workflow for making a change to the model goes something like this:</p>
+        <h2>Integrate code generation into the IDE</h2>
 
-<ol>
-<li>Create table(s) in the MySql workbench model</li>
-<li>Export updated create script
-<ol>
-<li>Also create any migration scripts required to update the existing database with your changes</li>
-</ol></li>
-<li>Re-create your local development database with the changes</li>
-<li>Open MyGeneration and add any required metadata</li>
-<li>Select the tables and objects you want to re-generate</li>
-<li>Execute code generation</li>
-<li>Perform required manual integration of the generated code</li>
-<li>Add any additional handmade code to compliment the generated code</li>
-</ol>
+        <p>
+          I’m looking specifically at the
+          <a href="http://msdn.microsoft.com/en-us/library/bb126445.aspx"
+            >T4 Text Templates</a
+          >. This tool is specifically quite useful as it has tight integration
+          with Visual Studio (and other .Net IDEs) as well as being able to be
+          run on the
+          <a href="http://msdn.microsoft.com/en-us/library/bb126245.aspx"
+            >command line directly</a
+          >.
+        </p>
 
-<p>This current workflow can introduce friction to integration in two main areas:
-1. Generating code off the local database does not ensure that the database has the latest set of changes, or is even generated from the current branch of development. Re-deployment of the database can also be a time-consuming process if it’s having to be run multiple times.
-2. The MyGeneration tool has a single install path and is therefore a shared component, not specific to the current branch of development or included alongside the source control.</p>
-
-<p>Therefore, my current ideas around this area are to research the feasibility of two main changes.</p>
-
-<h2>Remove deployment to an actual database before generating code</h2>
-
-<p>The ideal solution here would be to have a method of extracting the database metadata from as close to the original model as possible. A good point of interception could be the SQL database create script. Theoretically it could be possible to work directly with the workbench files, however these are far less stable in standardisation than SQL and would be more likely to change and require more on-going work, whereas the SQL syntax is very strictly defined.</p>
-
-<p>My current research in this area is to use <a href="http://www.antlr.org/">ANTLR</a> to parse the <a href="http://www.antlr.org/grammar/1242202695031/mysql-grammar.zip">MySQL grammar</a> (zip file), and create an object model to represent the created database. Initially this would just be supporting table creation statements, but could theoretically also extend to views and stored procedures. A good example of the object model is the <a href="http://mygeneration.svn.sourceforge.net/viewvc/mygeneration/trunk/mymeta/Interfaces/">interfaces</a> used in the <a href="http://mygeneration.svn.sourceforge.net/viewvc/mygeneration/trunk/mymeta/">MyMeta project</a> of MyGeneration.</p>
-
-<h2>Integrate code generation into the IDE</h2>
-
-<p>I’m looking specifically at the <a href="http://msdn.microsoft.com/en-us/library/bb126445.aspx">T4 Text Templates</a>. This tool is specifically quite useful as it has tight integration with Visual Studio (and other .Net IDEs) as well as being able to be run on the <a href="http://msdn.microsoft.com/en-us/library/bb126245.aspx">command line directly</a>.</p>
-
-<p>The T4 engine is designed specifically to create a single output file off of a single template but can also be adapted to <a href="http://www.olegsych.com/2008/03/how-to-generate-multiple-outputs-from-single-t4-template/">generate multiples files</a>. Using the MyGeneration tool to generate multiple files also uses a similar technique. This would therefore mean that there is a single control template which gets the input model using the previous technique, then runs all the sub-templates to create the files in the correct locations.</p>
-
-
-        </section>
-
-        <footer class="post-footer">
-
-            
-
-            <section class="author">
-                <h4><a href="#">&nbsp;</a></h4>
-
-                
-                <div class="author-meta">
-                    
-                </div>
-            </section>
-
-            
-
-        </footer>
-
-    </article>
-</main>
-
-
-
-
-        <footer class="site-footer clearfix">
-            <section class="copyright"><a href="http://www.danielbradley.net/">DanielBradley.Net - The Argumentative Exception</a> &copy; 2015</section>
-            <section class="poweredby">Proudly published with <a href="https://github.com/fsprojects/FsBlog">FsBlog</a></section>
-        </footer>
-
-    </div>
-
-    
-
-    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="http://www.danielbradley.net//js/jquery.fitvids.js"></script>
-    <script type="text/javascript" src="http://www.danielbradley.net//js/index.js"></script>
-
-</body>
+        <p>
+          The T4 engine is designed specifically to create a single output file
+          off of a single template but can also be adapted to
+          <a
+            href="http://www.olegsych.com/2008/03/how-to-generate-multiple-outputs-from-single-t4-template/"
+            >generate multiples files</a
+          >. Using the MyGeneration tool to generate multiple files also uses a
+          similar technique. This would therefore mean that there is a single
+          control template which gets the input model using the previous
+          technique, then runs all the sub-templates to create the files in the
+          correct locations.
+        </p>
+      </article>
+    </main>
+    <footer>
+      <section>
+        <a href="/">danielbradley.net - The Argumentative Exception</a>
+        &copy; 2022
+      </section>
+    </footer>
+  </body>
 </html>
