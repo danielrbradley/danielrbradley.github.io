@@ -54,6 +54,113 @@
       </section> -->
 
       <section>
+        <h2>Work Highlights</h2>
+
+        <article>
+          <h3>
+            <a href="https://github.com/pulumi/pulumi/pull/18743">
+              Optimising Pulumi secret handling
+            </a>
+          </h3>
+          <p>
+            Improved caching and batching performance of secret encryption and
+            decryption within Pulumi state serialisation. This provided
+            significant reduction in deployment times for projects with many
+            secrets.
+          </p>
+          <time datetime="2025-02-27">27 February 2025</time>
+        </article>
+
+        <article>
+          <h3>
+            <a href="https://github.com/pulumi/providertest/pull/37"
+              >Pulumi program testing library for Go</a
+            >
+          </h3>
+          <p>
+            Built a testing library for running Pulumi programs within a Go test
+            suite. This was primarily to help with testing Pulumi providers but
+            was also adopted by other teams as it's an unopinionated way to test
+            Pulumi programs. It builds on the Pulumi automation API, but
+            providing sensible defaults and asserts for a testing context.
+          </p>
+          <time datetime="2023-12-07">7 December 2023</time>
+        </article>
+
+        <article>
+          <h3>
+            <a href="https://github.com/pulumi/pulumi-awsx/pull/1153">
+              Pulumi VPC component subnet layout improvements
+            </a>
+          </h3>
+          <p>
+            Allow users to specify exact subnet layouts and sizes when creating
+            a VPC with the Pulumi AWSX library. This allows for evolving subnet
+            requirements without the need to recreate the VPCs.
+          </p>
+        </article>
+
+        <article>
+          <h3>
+            <a href="https://github.com/pulumi/pulumi/pull/14522">
+              Consume Pulumi programs as components
+            </a>
+          </h3>
+          <p>
+            Starting as a proof of concept, I explored the idea of allowing any
+            Pulumi program to be able to be consumed by other Pulumi programs
+            like a component. This was ultimately not merged, but led to renewed
+            investment in the usability of Pulumi components.
+          </p>
+          <time datetime="2023-11-10">10 November 2023</time>
+        </article>
+
+        <article>
+          <h3>GitHub actions</h3>
+          <p>
+            Wrote a number of small, well defined GitHub actions to help with
+            the publishing of Pulumi providers. This includes
+            <a href="https://github.com/pulumi/provider-version-action"
+              >pulumi/provider-version-action</a
+            >
+            to generate the version number for any build-with support for PR
+            builds, pre-releases and tagged releases, and major version upgrade
+            flows; and
+            <a href="https://github.com/pulumi/verify-provider-release"
+              >pulumi/verify-provider-release</a
+            >
+            to ensure published SDKs & binaries are usable.
+          </p>
+          <p>
+            Other small but useful utilities are
+            <a href="https://github.com/pulumi/glob-action"
+              >pulumi/glob-action</a
+            >
+            which allows for cross-platform glob-based file operations; and
+            <a href="https://github.com/pulumi/git-status-check-action"
+              >pulumi/git-status-check-action</a
+            >
+            for checking for unexpected file modifications during CI runs.
+          </p>
+        </article>
+
+        <article>
+          <h3>
+            <a href="https://gist.github.com/danielrbradley/7567269"
+              >Validating UK Number Plates</a
+            >
+          </h3>
+          <p>
+            Created the regular expression for a project working with the UK
+            automotive industry. It's received a lot of comments, stars and
+            forks over the years as it continues to be a useful resource for
+            developers.
+          </p>
+        </article>
+        <time datetime="2013-11-20">20 November 2013</time>
+      </section>
+
+      <section>
         <h2>Writing/Speaking</h2>
 
         <article>
