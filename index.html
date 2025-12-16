@@ -51,12 +51,26 @@
       </section> -->
 
       <section>
-        <h2>Work Highlights</h2>
+        <h2>Open Source Work Highlights</h2>
+
+        <article>
+          <h3>
+            <a href="https://github.com/pulumi/pulumi/pull/19166">
+              Pulumi CLI: Remote stack config
+            </a>
+          </h3>
+          <p>
+            Add CLI support for interacting with cloud stack configs - where
+            stack configs are managed in the cloud instead of as files in the
+            local project directory.
+          </p>
+          <time datetime="2025-06-02">2 June 2025</time>
+        </article>
 
         <article>
           <h3>
             <a href="https://github.com/pulumi/pulumi/pull/18743">
-              Optimising Pulumi secret handling
+              Pulumi CLI: Optimising Pulumi secret handling
             </a>
           </h3>
           <p>
@@ -70,9 +84,9 @@
 
         <article>
           <h3>
-            <a href="https://github.com/pulumi/providertest/pull/37"
-              >Pulumi program testing library for Go</a
-            >
+            <a href="https://github.com/pulumi/providertest/pull/37">
+              Pulumi dev tooling: program testing library for Go
+            </a>
           </h3>
           <p>
             Built a testing library for running Pulumi programs within a Go test
@@ -87,7 +101,7 @@
         <article>
           <h3>
             <a href="https://github.com/pulumi/pulumi-awsx/pull/1153">
-              Pulumi VPC component subnet layout improvements
+              Pulumi AWS VPC component subnet layout improvements
             </a>
           </h3>
           <p>
@@ -95,12 +109,13 @@
             a VPC with the Pulumi AWSX library. This allows for evolving subnet
             requirements without the need to recreate the VPCs.
           </p>
+          <time datetime="2023-11-20">20 November 2023</time>
         </article>
 
         <article>
           <h3>
             <a href="https://github.com/pulumi/pulumi/pull/14522">
-              Consume Pulumi programs as components
+              Pulumi CLI: Consume Pulumi programs as components
             </a>
           </h3>
           <p>
@@ -113,32 +128,94 @@
         </article>
 
         <article>
-          <h3>GitHub actions</h3>
+          <h3>
+            <a href="https://github.com/pulumi/ci-mgmt">
+              Pulumi CI Management
+            </a>
+          </h3>
+          <p>
+            Maintained the CI system for over 100 provider repositories for
+            pull-request and release flows.
+          </p>
+          <ul>
+            <li>
+              <a href="https://github.com/pulumi/ci-mgmt/pull/301">
+                Simplify job matrix
+              </a>
+              for stable job naming and easier tool upgrades.
+            </li>
+            <li>
+              <a href="https://github.com/pulumi/ci-mgmt/pull/948">
+                Simplify sentinel check
+              </a>
+              for reliable auto-merge behaviour.
+            </li>
+            <li>
+              <a href="https://github.com/pulumi/ci-mgmt/pull/1059">
+                Testing release processes
+              </a>
+              via merge-queues & phony provider.
+            </li>
+          </ul>
+        </article>
+
+        <article>
+          <h3>
+            <a
+              href="https://github.com/search?q=topic%3Agithub-actions+org%3Apulumi+&type=repositories"
+            >
+              Pulumi GitHub Actions
+            </a>
+          </h3>
           <p>
             Wrote a number of small, well defined GitHub actions to help with
-            the publishing of Pulumi providers. This includes
-            <a href="https://github.com/pulumi/provider-version-action"
-              >pulumi/provider-version-action</a
-            >
-            to generate the version number for any build-with support for PR
-            builds, pre-releases and tagged releases, and major version upgrade
-            flows; and
-            <a href="https://github.com/pulumi/verify-provider-release"
-              >pulumi/verify-provider-release</a
-            >
-            to ensure published SDKs & binaries are usable.
+            the publishing of Pulumi providers.
           </p>
+
+          <ul>
+            <li>
+              <a href="https://github.com/pulumi/provider-version-action">
+                pulumi/provider-version-action:
+              </a>
+              Generate the version number for any build. With support for PR
+              builds, pre-releases and tagged releases, and major version
+              upgrade flows
+            </li>
+            <li>
+              <a href="https://github.com/pulumi/verify-provider-release">
+                pulumi/verify-provider-release:
+              </a>
+              Ensure published Pulumi SDKs & binaries are usable.
+            </li>
+            <li>
+              <a href="https://github.com/pulumi/glob-action">
+                pulumi/glob-action:
+              </a>
+              Cross-platform glob-based file operations.
+            </li>
+            <li>
+              <a href="https://github.com/pulumi/git-status-check-action">
+                pulumi/git-status-check-action:
+              </a>
+              Check for unexpected file modifications during CI runs.
+            </li>
+          </ul>
+        </article>
+
+        <article>
+          <h3>
+            <a href="https://github.com/o2Labs/office-booker"
+              >O2 Labs: Office Booker</a
+            >
+          </h3>
           <p>
-            Other small but useful utilities are
-            <a href="https://github.com/pulumi/glob-action"
-              >pulumi/glob-action</a
-            >
-            which allows for cross-platform glob-based file operations; and
-            <a href="https://github.com/pulumi/git-status-check-action"
-              >pulumi/git-status-check-action</a
-            >
-            for checking for unexpected file modifications during CI runs.
+            Coordinating the safe return to offices once COVID-19 restrictions
+            were lifted. Led a team of 4 developers put together this real-time
+            booking app in just 10 days for proactively managing demand for
+            office space by allowing you to book ahead of travelling to the
+            office.
           </p>
+          <time datetime="2020-07-07">7 July 2020</time>
         </article>
 
         <article>
