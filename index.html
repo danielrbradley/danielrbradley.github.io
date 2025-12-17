@@ -39,18 +39,7 @@
         <a rel="me" href="https://www.strava.com/athletes/30219458">Strava</a>
       </section>
 
-      <!-- <section>
-        <h2>Project highlights</h2>
-        <article>
-          <h3>News Agency Systems</h3>
-          <p>
-            Photo management, video production, news authoring and
-            syndication systems for a small news agency.
-          </p>
-        </article>
-      </section> -->
-
-      <section>
+      <section class="work">
         <h2>Open Source Work Highlights</h2>
 
         <article>
@@ -59,12 +48,14 @@
               Pulumi CLI: Remote stack config
             </a>
           </h3>
-          <p>
+          <div class="date">
+            <time datetime="2025-06-02">2 June 2025</time>
+          </div>
+          <div class="description">
             Add CLI support for interacting with cloud stack configs - where
             stack configs are managed in the cloud instead of as files in the
             local project directory.
-          </p>
-          <time datetime="2025-06-02">2 June 2025</time>
+          </div>
         </article>
 
         <article>
@@ -73,13 +64,15 @@
               Pulumi CLI: Optimising Pulumi secret handling
             </a>
           </h3>
-          <p>
+          <div class="date">
+            <time datetime="2025-02-27">27 February 2025</time>
+          </div>
+          <div class="description">
             Improved caching and batching performance of secret encryption and
             decryption within Pulumi state serialisation. This provided
             significant reduction in deployment times for projects with many
             secrets.
-          </p>
-          <time datetime="2025-02-27">27 February 2025</time>
+          </div>
         </article>
 
         <article>
@@ -88,14 +81,16 @@
               Pulumi dev tooling: program testing library for Go
             </a>
           </h3>
-          <p>
+          <div class="date">
+            <time datetime="2023-12-07">7 December 2023</time>
+          </div>
+          <div class="description">
             Built a testing library for running Pulumi programs within a Go test
             suite. This was primarily to help with testing Pulumi providers but
             was also adopted by other teams as it's an unopinionated way to test
             Pulumi programs. It builds on the Pulumi automation API, but
             providing sensible defaults and asserts for a testing context.
-          </p>
-          <time datetime="2023-12-07">7 December 2023</time>
+          </div>
         </article>
 
         <article>
@@ -104,12 +99,14 @@
               Pulumi AWS VPC component subnet layout improvements
             </a>
           </h3>
-          <p>
+          <div class="date">
+            <time datetime="2023-11-20">20 November 2023</time>
+          </div>
+          <div class="description">
             Allow users to specify exact subnet layouts and sizes when creating
             a VPC with the Pulumi AWSX library. This allows for evolving subnet
             requirements without the need to recreate the VPCs.
-          </p>
-          <time datetime="2023-11-20">20 November 2023</time>
+          </div>
         </article>
 
         <article>
@@ -118,13 +115,15 @@
               Pulumi CLI: Consume Pulumi programs as components
             </a>
           </h3>
-          <p>
+          <div class="date">
+            <time datetime="2023-11-10">10 November 2023</time>
+          </div>
+          <div class="description">
             Starting as a proof of concept, I explored the idea of allowing any
             Pulumi program to be able to be consumed by other Pulumi programs
             like a component. This was ultimately not merged, but led to renewed
             investment in the usability of Pulumi components.
-          </p>
-          <time datetime="2023-11-10">10 November 2023</time>
+          </div>
         </article>
 
         <article>
@@ -133,30 +132,30 @@
               Pulumi CI Management
             </a>
           </h3>
-          <p>
+          <div class="description">
             Maintained the CI system for over 100 provider repositories for
             pull-request and release flows.
-          </p>
-          <ul>
-            <li>
-              <a href="https://github.com/pulumi/ci-mgmt/pull/301">
-                Simplify job matrix
-              </a>
-              for stable job naming and easier tool upgrades.
-            </li>
-            <li>
-              <a href="https://github.com/pulumi/ci-mgmt/pull/948">
-                Simplify sentinel check
-              </a>
-              for reliable auto-merge behaviour.
-            </li>
-            <li>
-              <a href="https://github.com/pulumi/ci-mgmt/pull/1059">
-                Testing release processes
-              </a>
-              via merge-queues & phony provider.
-            </li>
-          </ul>
+            <ul>
+              <li>
+                <a href="https://github.com/pulumi/ci-mgmt/pull/301">
+                  Simplify job matrix
+                </a>
+                for stable job naming and easier tool upgrades.
+              </li>
+              <li>
+                <a href="https://github.com/pulumi/ci-mgmt/pull/948">
+                  Simplify sentinel check
+                </a>
+                for reliable auto-merge behaviour.
+              </li>
+              <li>
+                <a href="https://github.com/pulumi/ci-mgmt/pull/1059">
+                  Testing release processes
+                </a>
+                via merge-queues & phony provider.
+              </li>
+            </ul>
+          </div>
         </article>
 
         <article>
@@ -167,39 +166,39 @@
               Pulumi GitHub Actions
             </a>
           </h3>
-          <p>
+          <div class="description">
             Wrote a number of small, well defined GitHub actions to help with
             the publishing of Pulumi providers.
-          </p>
 
-          <ul>
-            <li>
-              <a href="https://github.com/pulumi/provider-version-action">
-                pulumi/provider-version-action:
-              </a>
-              Generate the version number for any build. With support for PR
-              builds, pre-releases and tagged releases, and major version
-              upgrade flows
-            </li>
-            <li>
-              <a href="https://github.com/pulumi/verify-provider-release">
-                pulumi/verify-provider-release:
-              </a>
-              Ensure published Pulumi SDKs & binaries are usable.
-            </li>
-            <li>
-              <a href="https://github.com/pulumi/glob-action">
-                pulumi/glob-action:
-              </a>
-              Cross-platform glob-based file operations.
-            </li>
-            <li>
-              <a href="https://github.com/pulumi/git-status-check-action">
-                pulumi/git-status-check-action:
-              </a>
-              Check for unexpected file modifications during CI runs.
-            </li>
-          </ul>
+            <ul>
+              <li>
+                <a href="https://github.com/pulumi/provider-version-action">
+                  pulumi/provider-version-action:
+                </a>
+                Generate the version number for any build. With support for PR
+                builds, pre-releases and tagged releases, and major version
+                upgrade flows
+              </li>
+              <li>
+                <a href="https://github.com/pulumi/verify-provider-release">
+                  pulumi/verify-provider-release:
+                </a>
+                Ensure published Pulumi SDKs & binaries are usable.
+              </li>
+              <li>
+                <a href="https://github.com/pulumi/glob-action">
+                  pulumi/glob-action:
+                </a>
+                Cross-platform glob-based file operations.
+              </li>
+              <li>
+                <a href="https://github.com/pulumi/git-status-check-action">
+                  pulumi/git-status-check-action:
+                </a>
+                Check for unexpected file modifications during CI runs.
+              </li>
+            </ul>
+          </div>
         </article>
 
         <article>
@@ -208,174 +207,241 @@
               >O2 Labs: Office Booker</a
             >
           </h3>
-          <p>
+          <div class="date">
+            <time datetime="2020-07-07">7 July 2020</time>
+          </div>
+          <div class="description">
             Coordinating the safe return to offices once COVID-19 restrictions
             were lifted. Led a team of 4 developers put together this real-time
             booking app in just 10 days for proactively managing demand for
             office space by allowing you to book ahead of travelling to the
             office.
-          </p>
-          <time datetime="2020-07-07">7 July 2020</time>
+          </div>
         </article>
 
         <article>
           <h3>
+            Gist:
             <a href="https://gist.github.com/danielrbradley/7567269"
               >Validating UK Number Plates</a
             >
           </h3>
-          <p>
+          <div class="date">
+            <time datetime="2013-11-20">20 November 2013</time>
+          </div>
+          <div class="description">
             Created the regular expression for a project working with the UK
             automotive industry. It's received a lot of comments, stars and
             forks over the years as it continues to be a useful resource for
             developers.
-          </p>
+          </div>
         </article>
-        <time datetime="2013-11-20">20 November 2013</time>
       </section>
 
-      <section>
+      <section class="communication">
         <h2>Writing/Speaking</h2>
 
         <article>
-          <p>
+          <h3>
+            Talk:
             <a href="https://youtu.be/W1yWppNYE-Y">
-              Code Meets IaC: How to write Pulumi and OpenTofu Providers (Video
-              of talk at Config Mangement Camp in Ghent, Belgium)
+              Code Meets IaC: How to write Pulumi and OpenTofu Providers
             </a>
-            <br />
+          </h3>
+          <div class="date">
             <time datetime="2024-02-06">6 February 2024</time>
-          </p>
+          </div>
+          <div class="description">
+            Main stage talk at Config Mangement Camp in Ghent, Belgium
+          </div>
         </article>
 
         <article>
-          <p>
+          <h3>Talk: .NET Declarative DevOps</h3>
+          <div class="date">
+            <a href="https://www.meetup.com/dotnetcambridge/events/296212263/">
+              .NET Cambridge - <time datetime="2023-11-30">30 Nov 2023</time>
+            </a>
+            &amp;
+            <a href="https://www.meetup.com/dotnetoxford/events/298625720/"
+              >.NET Oxford - <time datetime="2024-02-20">20 Feb 2024</time></a
+            >
+          </div>
+          <div class="description">
+            Using .NET code to declare and deploy infrastructure to Azure.
+          </div>
+        </article>
+
+        <article>
+          <h3>
+            Talk:
+            <a
+              href="https://www.meetup.com/aws-user-group-thames-valley/events/292677047/"
+            >
+              Building Cloud Infrastructure with Code - past, present and
+              CloudControl
+            </a>
+          </h3>
+          <div class="date">
+            AWS User Group - Thames Valley -
+            <time datetime="2023-04-26">26 April 2023</time>
+          </div>
+          <div class="description">
+            A look at how deploying to AWS has evolved over the years, through
+            the API, SDKs and CloudFormation.
+          </div>
+        </article>
+
+        <article>
+          <h3>
+            Article:
             <a
               href="https://dev.to/danielrbradley/better-builds-with-make-a-beginners-guide-1n0"
             >
               Better Builds With Make - A Beginner's Guide
             </a>
-            <br />
+          </h3>
+          <div class="date">
             <time datetime="2023-08-14">14 August 2023</time>
-          </p>
+          </div>
         </article>
 
         <article>
-          <p>
+          <h3>
+            Article:
             <a
               href="https://dev.to/danielrbradley/replacing-build-servers-with-pulumi-aws-28fm"
             >
               Replacing Build Servers With Pulumi + AWS
             </a>
-            <br />
+          </h3>
+          <div class="date">
             <time datetime="2020-02-11">11 February 2020</time>
-          </p>
+          </div>
         </article>
 
         <article>
-          <p>
+          <h3>
+            Blog:
             <a href="blog/2014/08-20-reflections-of-node-for-fsharp/index.html"
               >Reflections of a .Net'er in a Node World (Some F# Language
               Ideas)</a
             >
-            <br />
+          </h3>
+          <div class="date">
             <time datetime="2014-08-20">20 August 2014</time>
-          </p>
+          </div>
         </article>
 
         <article>
-          <p>
+          <h3>
+            Blog:
             <a
               href="blog/2013/09-23-experiences-of-csharp-async-in-a-web-application/index.html"
               >Experiences of C# Async in a Web Application</a
             >
-            <br />
+          </h3>
+          <div class="date">
             <time datetime="2013-09-23">23 September 2013</time>
-          </p>
+          </div>
         </article>
 
         <article>
-          <p>
+          <h3>
+            Article:
             <a href="/blog/2012/06-21-mvc-enum-dropdown-list/index.html"
               >Better MVC Enum Dropdown List Implementation</a
             >
-            <br />
+          </h3>
+          <div class="date">
             <time datetime="2012-06-21">21 June 2012</time>
-          </p>
+          </div>
         </article>
 
         <article>
-          <p>
+          <h3>
+            Blog:
             <a href="/blog/2012/02-09-introducing-fluentmysql/index.html"
               >Introducing FluentMySQL</a
             >
-            <br />
+          </h3>
+          <div class="date">
             <time datetime="2012-02-09">09 February 2012</time>
-          </p>
+          </div>
         </article>
 
         <article>
-          <p>
+          <h3>
+            Blog:
             <a
               href="/blog/2012/01-17-code-generation-workflow-brainstorming/index.html"
               >Code generation workflow brainstorming</a
             >
-            <br />
+          </h3>
+          <div class="date">
             <time datetime="2012-01-17">17 January 2012</time>
-          </p>
+          </div>
         </article>
 
         <article>
-          <p>
+          <h3>
+            Article:
             <a href="/blog/2011/12-20-creating-possible-combinations/index.html"
               >Creating possible combinations from a list of lists in F#</a
             >
-            <br />
+          </h3>
+          <div class="date">
             <time datetime="2011-12-20">20 December 2011</time>
-          </p>
+          </div>
         </article>
 
         <article>
-          <p>
+          <h3>
+            Article:
             <a
               href="/blog/2010/10-19-howto-remove-files-from-a-git-repository-which-should-be"
               >HOWTO: Remove files from a git repository which should be
               ignored</a
             >
-            <br />
+          </h3>
+          <div class="date">
             <time datetime="2010-10-19">19 October 2010</time>
-          </p>
+          </div>
         </article>
 
         <article>
-          <p>
+          <h3>
+            Article:
             <a
               href="/blog/2010/10-09-recursively-searching-controls-in-aspnet-web-forms-using-generics-lambda"
               >Recursively searching controls in ASP.NET web forms using
               generics, lambda expressions and extension methods!</a
             >
-            <br />
+          </h3>
+          <div class="date">
             <time datetime="2010-10-09">9 October 2010</time>
-          </p>
+          </div>
         </article>
 
         <article>
-          <p>
+          <h3>
+            Article:
             <a
               href="/blog/2010/09-27-c-file-synchronisation-with-amazon-s3-buckets-tutorial"
               >C# file synchronisation with Amazon S3 buckets tutorial</a
             >
-            <br />
+          </h3>
+          <div class="date">
             <time datetime="2010-09-27">27 September 2010</time>
-          </p>
+          </div>
         </article>
       </section>
     </main>
 
     <footer>
       <section>
-        <a href="/">danielbradley.net - The Argumentative Exception</a>
-        &copy; 2022
+        <a href="/" rel="self">danielbradley.net</a>
+        &copy; Daniel Bradley 2026
       </section>
     </footer>
   </body>

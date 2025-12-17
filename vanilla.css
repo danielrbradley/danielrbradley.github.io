@@ -184,3 +184,17 @@ footer {
     border-top: 1px solid;
     font-size: 80%;
 }
+
+/** Page specific styling **/
+
+h3 {
+    margin-bottom: 0.5rem;
+}
+
+.date {
+    font-size: 80%;
+}
+
+.description {
+    margin-top: 0.5rem;
+}
